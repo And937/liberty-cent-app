@@ -9,6 +9,10 @@ import { Header } from '@/components/header';
 export const metadata: Metadata = {
   title: 'LibertyCent',
   description: 'Buy and sell CENT with confidence.',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 const inter = Inter({ subsets: ['latin'] })

@@ -1,0 +1,110 @@
+
+{
+  "Header": {
+    "title": "LibertyCent",
+    "nav_trade": "Trade",
+    "nav_account": "Personal Account",
+    "nav_info": "Info",
+    "nav_support": "Support",
+    "login_button": "Login",
+    "signup_button": "Sign Up",
+    "logout_button": "Logout"
+  },
+  "TradeCard": {
+    "title": "Buy CENT",
+    "description": "Instantly buy CENT tokens.",
+    "current_price": "Current Price",
+    "buy_amount_label": "Amount to Buy (CENT)",
+    "placeholder": "0.00",
+    "cost": "Cost:",
+    "buy_button": "Buy CENT",
+    "toast_error_title": "Invalid Amount",
+    "toast_error_description": "Please enter a valid amount to transact.",
+    "crypto_equivalents_title": "Equivalent in other currencies"
+  },
+  "PaymentDialog": {
+    "title": "Complete Your Purchase",
+    "description_selection": "Please select a payment method to continue.",
+    "details_title": "Pay with {crypto}",
+    "details_description": "To buy {amount} CENT, please transfer the exact amount below to the specified address.",
+    "amount_to_pay_label": "Amount to Pay",
+    "address_label": "Address",
+    "memo_label": "Memo / Comment",
+    "paid_button": "I Paid",
+    "back_button": "Back",
+    "close_button": "Close",
+    "toast_copy_success_title": "Copied to clipboard!",
+    "toast_copy_success_description": "Copied: {text}",
+    "toast_paid_title": "Transaction Under Review",
+    "toast_paid_description": "Your transaction is being processed. The tokens will be credited to your account after verification."
+  },
+  "InfoCard": {
+    "title": "Token Information",
+    "total_issued": "Total Issued",
+    "available_for_sale": "Available for Sale",
+    "purchased": "Purchased",
+    "remaining": "Remaining"
+  },
+  "AccountPage": {
+    "title": "Personal Account",
+    "description": "This is your personal account page. You can view your current balance here.",
+    "balance": "Your CENT Balance:",
+    "email": "Account Email"
+  },
+  "InfoPage": {
+    "title": "Information",
+    "subtitle": "Exclusive pre-sale of the CENT token",
+    "welcome_title": "Welcome to LibertyCent!",
+    "welcome_p1": "You are on the page for the exclusive pre-listing sale of the CENT token. This is a unique opportunity to purchase our project's tokens before their official listing on cryptocurrency exchanges.",
+    "welcome_p2": "We have made the process as simple and transparent as possible. The entire procedure is based on direct cryptocurrency transfers, which ensures security and reliability.",
+    "prelisting_title": "Why a Pre-Listing?",
+    "prelisting_p1": "Pre-listing is an exclusive period when our CENT tokens are available for purchase directly from the team before they are publicly traded. By participating in the pre-sale, you get:",
+    "benefits": {
+      "benefit1": "Early Access: The opportunity to purchase tokens before they are available to the general public.",
+      "benefit2": "Direct Support: Your funds directly contribute to the platform's development, marketing, and future listings."
+    },
+    "purchase_title": "How to Purchase",
+    "steps": {
+      "step1": "Define the amount: Specify how many CENT you want to purchase.",
+      "step2": "Choose the currency: Pay for the purchase using one of the popular cryptocurrencies.",
+      "step3": "Make the transfer: Send the exact amount to the specified wallet address.",
+      "step4": "Your tokens are safe: After the transfer is confirmed, the CENT tokens will be credited to your balance in your personal account. (Crediting can take from 5 minutes to 24 hours)",
+      "disclaimer": "(Crediting can take from 5 minutes to 24 hours)"
+    },
+    "vision_title": "Our Vision",
+    "vision_p1": "We believe in a future where finance is open and accessible to everyone. LibertyCent aims to be a key part of this new era. Your participation today is an investment in this vision.",
+    "vision_p2": "Join us. Become part of the LibertyCent story."
+  },
+  "SupportPage": {
+    "title": "Support",
+    "description": "Having issues? We're here to help.",
+    "card_title": "Contact Us",
+    "content": "For any questions or issues with your transactions, please contact our support team. We will get back to you as soon as possible.",
+    "copy_button": "Copy Email",
+    "toast_copy_success_title": "Email Copied!",
+    "toast_copy_success_description": "Copied {email} to clipboard."
+  },
+  "LoginPage": {
+    "title": "Login to your account",
+    "description": "Enter your email below to login.",
+    "email_label": "Email",
+    "password_label": "Password",
+    "login_button": "Login",
+    "loading_button": "Logging in...",
+    "no_account_text": "Don't have an account?",
+    "signup_link": "Sign up",
+    "error_title": "Login Failed",
+    "error_description": "Please check your credentials and try again."
+  },
+  "SignupPage": {
+    "title": "Create an account",
+    "description": "Enter your email and password to create an account.",
+    "email_label": "Email",
+    "password_label": "Password",
+    "signup_button": "Sign Up",
+    "loading_button": "Signing up...",
+    "has_account_text": "Already have an account?",
+    "login_link": "Login",
+    "error_title": "Signup Failed"
+  }
+}

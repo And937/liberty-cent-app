@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Mail, Copy, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { StakingCalculatorCard } from "@/components/staking-calculator-card";
 
 export default function AccountPage() {
   const { user, loading: authLoading, idToken } = useAuth();
@@ -27,7 +28,7 @@ export default function AccountPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    async function fetchAccountData() {
+    const fetchAccountData = async () => {
       if (user && idToken) {
         setIsBalanceLoading(true);
         setError(null);
@@ -47,7 +48,7 @@ export default function AccountPage() {
           setIsBalanceLoading(false);
         }
       }
-    }
+    };
 
     if (!authLoading && user) {
       fetchAccountData();
@@ -103,7 +104,7 @@ export default function AccountPage() {
                         <Skeleton className="h-10 w-32" />
                     ) : referralCode ? (
                         <div className="flex items-center gap-2">
-                            <p className="text-lg font-mono text-foreground bg-muted px-3 py-2 rounded-md">{referralCode}</p>
+                            <p className="font-mono text-lg bg-muted px-3 py-2 rounded-md text-foreground">{referralCode}</p>
                             <Button variant="outline" size="icon" onClick={() => copyToClipboard(referralCode, 'Referral Code')}>
                                 <Copy className="h-4 w-4"/>
                             </Button>
@@ -132,6 +133,8 @@ export default function AccountPage() {
             )}
           </CardContent>
         </Card>
+        
+        <StakingCalculatorCard />
 
       </div>
     </div>

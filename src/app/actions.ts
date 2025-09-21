@@ -83,10 +83,18 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
 
     const userRef = adminDb.collection('users').doc(userId);
     const docSnap = await userRef.get();
+    
+    let userData = docSnap.data();
+    let referralCode = userData?.referralCode;
 
-    if (!docSnap.exists) {
-      // If the user doc doesn't exist, it means something went wrong during signup.
-      // We should create it now to be safe.
+    // If the user document exists but is missing a referral code, generate and save one.
+    if (docSnap.exists && !referralCode) {
+      console.warn(`Referral code not found for uid: ${userId}. Creating it now.`);
+      const newReferralCode = userId.substring(0, 8);
+      await userRef.update({ referralCode: newReferralCode });
+      referralCode = newReferralCode; // Use the new code for the return value
+    } else if (!docSnap.exists) {
+      // If the user doc doesn't exist at all, create it.
       console.warn(`User document not found for uid: ${userId}. Creating it now.`);
       const newReferralCode = userId.substring(0, 8);
       await userRef.set({
@@ -97,10 +105,8 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
       return { success: true, balance: 0, referralCode: newReferralCode };
     }
 
-    const userData = docSnap.data();
     // Safely access balance, default to 0 if it doesn't exist.
     const balance = userData?.balance ?? 0;
-    const referralCode = userData?.referralCode;
 
     return { success: true, balance, referralCode };
   } catch (error: any) {

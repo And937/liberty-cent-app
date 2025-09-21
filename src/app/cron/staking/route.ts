@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
 // This is the function that will be executed by the cron job.
+// Force rebuild on Vercel
 export async function GET(request: NextRequest) {
   // 1. Authenticate the request
   const authHeader = request.headers.get('authorization');

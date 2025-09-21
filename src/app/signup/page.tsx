@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,13 +12,24 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { createUser } from "@/app/actions";
 
-export default function SignupPage() {
+
+function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { signup, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Pre-fill referral code from URL query `?ref=...`
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      setReferralCode(refCode);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // If auth is done loading and there IS a user, redirect them away from signup.
@@ -38,23 +49,24 @@ export default function SignupPage() {
       const result = await createUser({
         uid: userCredential.user.uid,
         email: userCredential.user.email!,
-        idToken: idToken
+        idToken: idToken,
+        referralCode: referralCode || null,
       });
 
       if (!result.success) {
-        // This case is critical. The user has an auth account but no DB record.
-        // This can happen if the Firestore rules are too restrictive, or the service is down.
-        // The user should be notified to contact support.
         console.error("Failed to create user document in Firestore:", result.error);
         toast({
           variant: "destructive",
           title: "Signup Partially Successful",
           description: "Your account was created, but we couldn't set up your profile. Please contact support."
         });
+      } else {
+         toast({
+          title: "Signup Successful!",
+          description: "Welcome to LibertyCent. You will be redirected to your account."
+        });
       }
-      // Let the useEffect handle the redirect to /account page upon successful state change.
     } catch (error: any) {
-      // This catches errors from Firebase Auth (e.g., weak password, email already in use)
       toast({
         variant: "destructive",
         title: "Signup Failed",
@@ -65,7 +77,6 @@ export default function SignupPage() {
     }
   };
 
-  // Show a loader while auth state is being determined or if the user exists and is being redirected.
   if (authLoading || user) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -105,6 +116,16 @@ export default function SignupPage() {
                 placeholder="********"
               />
             </div>
+             <div className="space-y-2">
+              <Label htmlFor="referral">Referral Code (Optional)</Label>
+              <Input
+                id="referral"
+                type="text"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                placeholder="Enter referral code"
+              />
+            </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Signing up..." : "Sign Up"}
@@ -119,5 +140,14 @@ export default function SignupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
+      <SignupForm />
+    </Suspense>
   );
 }

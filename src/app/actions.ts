@@ -20,7 +20,7 @@ async function verifyToken(idToken: string | undefined | null) {
 }
 
 // Server action to create a user document in Firestore
-export async function createUser(data: { uid: string; email: string, idToken: string }) {
+export async function createUser(data: { uid: string; email: string, idToken: string, referralCode?: string | null }) {
   try {
     // The token here is to ensure the call is from an auth'd user.
     await verifyToken(data.idToken);
@@ -30,11 +30,41 @@ export async function createUser(data: { uid: string; email: string, idToken: st
     }
 
     const userRef = adminDb.collection('users').doc(data.uid);
-    // Use `set` with `merge: true` to avoid overwriting existing data, though it's a new user.
+    
+    // Generate a unique referral code from the user's UID
+    const newReferralCode = data.uid.substring(0, 8);
+    
+    let initialBalance = 0;
+
+    // Handle referral logic
+    if (data.referralCode) {
+      const trimmedCode = data.referralCode.trim();
+      const usersCollection = adminDb.collection('users');
+      const query = usersCollection.where('referralCode', '==', trimmedCode).limit(1);
+      const snapshot = await query.get();
+
+      if (!snapshot.empty) {
+        const referrerDoc = snapshot.docs[0];
+        // Ensure user doesn't refer themselves (by using their own code, which is impossible at signup, but good practice)
+        if (referrerDoc.id !== data.uid) {
+            initialBalance = 10; // New user gets 10 CENT
+            // Update referrer's balance
+            const referrerRef = usersCollection.doc(referrerDoc.id);
+            await referrerRef.update({
+              balance: FieldValue.increment(300) // Referrer gets 300 CENT
+            });
+        }
+      }
+      // If referral code is invalid, initialBalance remains 0. We don't throw an error.
+    }
+
+
     await userRef.set({
       email: data.email,
-      balance: 0,
+      balance: initialBalance,
+      referralCode: newReferralCode,
     }, { merge: true });
+
     return { success: true };
   } catch (error: any) {
     console.error("Error creating user in Firestore:", error.message);
@@ -42,7 +72,7 @@ export async function createUser(data: { uid: string; email: string, idToken: st
   }
 }
 
-export async function getUserBalance(data: { idToken: string }): Promise<{ success: boolean; balance?: number; error?: string }> {
+export async function getUserBalance(data: { idToken: string }): Promise<{ success: boolean; balance?: number; referralCode?: string; error?: string }> {
   try {
     const decodedToken = await verifyToken(data.idToken);
     const userId = decodedToken.uid;
@@ -56,7 +86,6 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
 
     if (!docSnap.exists) {
       // If the user doc doesn't exist, it means something went wrong during signup.
-      // We can either create it here, or just return a 0 balance. Returning 0 is safer.
       console.warn(`User document not found for uid: ${userId}. Returning 0 balance.`);
       return { success: true, balance: 0 };
     }
@@ -64,8 +93,9 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
     const userData = docSnap.data();
     // Safely access balance, default to 0 if it doesn't exist.
     const balance = userData?.balance ?? 0;
+    const referralCode = userData?.referralCode;
 
-    return { success: true, balance: balance };
+    return { success: true, balance, referralCode };
   } catch (error: any) {
     console.error("Error getting user balance:", error.message);
     // The error from verifyToken is already descriptive.

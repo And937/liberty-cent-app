@@ -1,5 +1,5 @@
 {
-  "cron": [
+  "crons": [
     {
       "path": "/api/cron/staking",
       "schedule": "0 0 * * 0"

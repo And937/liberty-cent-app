@@ -8,9 +8,9 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 94.1%; /* #F0F0F0 */
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
+    --card: 210 40% 100% / 0.8;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
@@ -45,7 +45,7 @@ body {
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 0 0% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 84% 4.9% / 0.8;
     --card-foreground: 0 0% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 0 0% 98%;
@@ -83,6 +83,10 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-image: url('/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
 }

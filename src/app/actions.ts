@@ -86,8 +86,15 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
 
     if (!docSnap.exists) {
       // If the user doc doesn't exist, it means something went wrong during signup.
-      console.warn(`User document not found for uid: ${userId}. Returning 0 balance.`);
-      return { success: true, balance: 0 };
+      // We should create it now to be safe.
+      console.warn(`User document not found for uid: ${userId}. Creating it now.`);
+      const newReferralCode = userId.substring(0, 8);
+      await userRef.set({
+        email: decodedToken.email,
+        balance: 0,
+        referralCode: newReferralCode,
+      });
+      return { success: true, balance: 0, referralCode: newReferralCode };
     }
 
     const userData = docSnap.data();

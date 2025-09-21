@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Mail, Copy, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { StakingCalculatorCard } from "@/components/staking-calculator-card";
+import { DailyBonusCard } from "@/components/daily-bonus-card";
 
 export default function AccountPage() {
   const { user, loading: authLoading, idToken } = useAuth();
@@ -134,7 +135,7 @@ export default function AccountPage() {
           </CardContent>
         </Card>
         
-        <StakingCalculatorCard />
+        <DailyBonusCard />
 
       </div>
     </div>

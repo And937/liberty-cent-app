@@ -1,6 +1,7 @@
+
 import { TradeCard } from "@/components/trade-card";
 import { StakingCard } from "@/components/staking-card";
-import { DailyBonusCard } from "@/components/daily-bonus-card";
+import { StakingCalculatorCard } from "@/components/staking-calculator-card";
 
 export default function Home() {
   return (
@@ -8,7 +9,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto space-y-8">
           <TradeCard />
           <StakingCard />
-          <DailyBonusCard />
+          <StakingCalculatorCard />
       </div>
     </div>
   );

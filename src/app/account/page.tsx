@@ -7,7 +7,7 @@ import { getUserBalance } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Mail, Copy, Gift } from "lucide-react";
+import { Loader2, Mail, Copy, Gift, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
@@ -72,6 +72,8 @@ export default function AccountPage() {
     );
   }
 
+  const siteLink = "https://libertycent.com";
+
   return (
     <div className="container mx-auto p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-8">
@@ -97,18 +99,35 @@ export default function AccountPage() {
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Gift className="h-5 w-5 text-muted-foreground"/>
-                        <span>Your Referral Code</span>
+                        <span>Your Referral Info</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {isBalanceLoading ? (
-                        <Skeleton className="h-10 w-32" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-full" />
+                            <Skeleton className="h-10 w-24" />
+                        </div>
                     ) : referralCode ? (
-                        <div className="flex items-center gap-2">
-                            <p className="font-mono text-lg bg-muted px-3 py-2 rounded-md text-foreground">{referralCode}</p>
-                            <Button variant="outline" size="icon" onClick={() => copyToClipboard(referralCode, 'Referral Code')}>
-                                <Copy className="h-4 w-4"/>
-                            </Button>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm text-muted-foreground">Your Code</label>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <p className="text-sm font-medium bg-muted p-2 rounded-md flex-grow">{referralCode}</p>
+                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(referralCode, 'Referral Code')}>
+                                        <Copy className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-sm text-muted-foreground">Site Link</label>
+                                 <div className="flex items-center gap-2 mt-1">
+                                    <p className="text-sm font-medium text-blue-500 p-2 rounded-md bg-muted flex-grow break-all">{siteLink}</p>
+                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(siteLink, 'Site Link')}>
+                                        <LinkIcon className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                     ) : (
                          <p className="text-sm text-muted-foreground">No referral code found.</p>

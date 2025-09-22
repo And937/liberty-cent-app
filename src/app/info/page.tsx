@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Zap, Gift, TrendingUp, Users, Rocket, Target, Bell } from "lucide-react";
+import { Zap, Gift, TrendingUp, Users, Rocket, Target, Bell, HeartHandshake } from "lucide-react";
 
 export default function InfoPage() {
     const dailyBonuses = [
@@ -12,6 +12,13 @@ export default function InfoPage() {
         { day: 6, reward: "60 CENT" },
         { day: "7+", reward: "100 CENT" },
     ];
+
+    const purchaseSteps = [
+      "Define the amount: Specify how many CENT you want to purchase.",
+      "Choose the currency: Pay for the purchase using one of the popular cryptocurrencies.",
+      "Make the transfer: Send the exact amount to the specified wallet address.",
+      "Your tokens are safe: After the transfer is confirmed, the CENT tokens will be credited to your balance in your personal account."
+    ]
 
     return (
         <div className="container mx-auto p-4 md:p-8">
@@ -37,6 +44,23 @@ export default function InfoPage() {
                             <li><span className="font-medium">Limited Supply:</span> The total number of tokens is limited, which creates the potential for their value to increase as demand grows.</li>
                         </ul>
                          <p className="font-semibold text-foreground pt-2">Holding CENT means believing in a future where everyone has control over their finances. We are building it together.</p>
+                    </CardContent>
+                </Card>
+                
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-3 text-2xl">
+                            <Target className="text-primary"/>
+                            How to Purchase
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground">
+                        <ol className="list-decimal list-inside space-y-3">
+                            {purchaseSteps.map((step, index) => (
+                                <li key={index}>{step}</li>
+                            ))}
+                        </ol>
+                        <p className="text-sm text-center font-medium pt-2">(Crediting can take from 5 minutes to 24 hours)</p>
                     </CardContent>
                 </Card>
 
@@ -106,7 +130,20 @@ export default function InfoPage() {
                         <p className="pt-2 font-medium">Your patience and support today are the keys to the entire community's success tomorrow. Every CENT accumulated brings us closer to our shared goal.</p>
                     </CardContent>
                 </Card>
+
+                <Card className="shadow-2xl border-primary/20 bg-gradient-to-tr from-card to-muted/50">
+                    <CardContent className="p-6 text-center">
+                        <div className="flex justify-center items-center mb-4">
+                            <HeartHandshake className="h-10 w-10 text-primary" />
+                        </div>
+                        <p className="text-muted-foreground mb-4">We believe in a future where finance is open and accessible to everyone. Your participation today is a vital investment in this vision.</p>
+                        <p className="text-xl font-bold text-foreground">Thank you for being a part of the LibertyCent story.</p>
+                    </CardContent>
+                </Card>
+
             </div>
         </div>
     );
 }
+
+    

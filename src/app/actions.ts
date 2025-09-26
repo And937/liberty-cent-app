@@ -35,6 +35,7 @@ export async function createUser(data: { uid: string; email: string, idToken: st
     const newReferralCode = data.uid.substring(0, 8);
     
     let initialBalance = 0;
+    let referredById: string | null = null;
 
     // Handle referral logic
     if (data.referralCode) {
@@ -48,6 +49,7 @@ export async function createUser(data: { uid: string; email: string, idToken: st
         // Ensure user doesn't refer themselves (by using their own code, which is impossible at signup, but good practice)
         if (referrerDoc.id !== data.uid) {
             initialBalance = 10; // New user gets 10 CENT
+            referredById = referrerDoc.id;
             // Update referrer's balance
             const referrerRef = usersCollection.doc(referrerDoc.id);
             await referrerRef.update({
@@ -63,6 +65,8 @@ export async function createUser(data: { uid: string; email: string, idToken: st
       email: data.email,
       balance: initialBalance,
       referralCode: newReferralCode,
+      referredBy: referredById,
+      createdAt: FieldValue.serverTimestamp(),
       lastBonusClaim: null,
       loginStreak: 0,
     }, { merge: true });
@@ -103,6 +107,8 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
         email: decodedToken.email,
         balance: 0,
         referralCode: newReferralCode,
+        referredBy: null,
+        createdAt: FieldValue.serverTimestamp(),
         lastBonusClaim: null,
         loginStreak: 0,
       });
@@ -280,6 +286,58 @@ export async function claimDailyBonus(data: { idToken: string }): Promise<{
 
     } catch (error: any) {
         console.error("Error claiming daily bonus:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+export interface ReferredUser {
+    email: string;
+    createdAt: string;
+}
+
+export async function getReferredUsers(data: { idToken: string }): Promise<{
+    success: boolean;
+    users?: ReferredUser[];
+    error?: string;
+}> {
+    try {
+        const decodedToken = await verifyToken(data.idToken);
+        const userId = decodedToken.uid;
+
+        if (!adminDb) {
+            throw new Error('Firestore is not initialized.');
+        }
+
+        const usersCollection = adminDb.collection('users');
+        // The query was simplified to avoid needing a composite index.
+        // We will sort the results in the code below.
+        const snapshot = await usersCollection.where('referredBy', '==', userId).get();
+
+        if (snapshot.empty) {
+            return { success: true, users: [] };
+        }
+        
+        const referredUsers: ReferredUser[] = snapshot.docs.map(doc => {
+            const data = doc.data();
+            const createdAtTimestamp = data.createdAt as Timestamp;
+            return {
+                email: data.email,
+                // Return date in a simple string format
+                createdAt: createdAtTimestamp ? createdAtTimestamp.toDate().toLocaleDateString() : 'N/A',
+                // Keep the timestamp for sorting
+                createdAtTimestamp: createdAtTimestamp ? createdAtTimestamp.toMillis() : 0,
+            };
+        })
+        // Sort the users by creation date, descending (newest first)
+        .sort((a, b) => b.createdAtTimestamp - a.createdAtTimestamp)
+        // Remove the temporary timestamp property before returning
+        .map(({ createdAtTimestamp, ...rest }) => rest);
+
+
+        return { success: true, users: referredUsers };
+
+    } catch (error: any) {
+        console.error("Error getting referred users:", error.message);
         return { success: false, error: error.message };
     }
 }

@@ -11,6 +11,7 @@ import { Loader2, Mail, Copy, Gift, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
+import { ReferredUsersList } from "@/components/referred-users-list";
 
 export default function AccountPage() {
   const { user, loading: authLoading, idToken } = useAuth();
@@ -155,6 +156,8 @@ export default function AccountPage() {
         </Card>
         
         <DailyBonusCard />
+        
+        <ReferredUsersList />
 
       </div>
     </div>

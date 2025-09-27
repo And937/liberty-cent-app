@@ -35,7 +35,6 @@ export async function createUser(data: { uid: string; email: string, idToken: st
     const newReferralCode = data.uid.substring(0, 8);
     
     let initialBalance = 0;
-    let referredById: string | null = null;
 
     // Handle referral logic
     if (data.referralCode) {
@@ -49,7 +48,6 @@ export async function createUser(data: { uid: string; email: string, idToken: st
         // Ensure user doesn't refer themselves (by using their own code, which is impossible at signup, but good practice)
         if (referrerDoc.id !== data.uid) {
             initialBalance = 10; // New user gets 10 CENT
-            referredById = referrerDoc.id;
             // Update referrer's balance
             const referrerRef = usersCollection.doc(referrerDoc.id);
             await referrerRef.update({
@@ -65,8 +63,6 @@ export async function createUser(data: { uid: string; email: string, idToken: st
       email: data.email,
       balance: initialBalance,
       referralCode: newReferralCode,
-      referredBy: referredById,
-      createdAt: FieldValue.serverTimestamp(),
       lastBonusClaim: null,
       loginStreak: 0,
     }, { merge: true });
@@ -107,8 +103,6 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
         email: decodedToken.email,
         balance: 0,
         referralCode: newReferralCode,
-        referredBy: null,
-        createdAt: FieldValue.serverTimestamp(),
         lastBonusClaim: null,
         loginStreak: 0,
       });

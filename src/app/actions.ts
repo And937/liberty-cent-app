@@ -35,27 +35,30 @@ export async function createUser(data: { uid: string; email: string, idToken: st
     const newReferralCode = data.uid.substring(0, 8);
     
     let initialBalance = 0;
+    let referredById: string | null = null;
 
     // Handle referral logic
     if (data.referralCode) {
       const trimmedCode = data.referralCode.trim();
-      const usersCollection = adminDb.collection('users');
-      const query = usersCollection.where('referralCode', '==', trimmedCode).limit(1);
-      const snapshot = await query.get();
+      if (trimmedCode) {
+          const usersCollection = adminDb.collection('users');
+          const query = usersCollection.where('referralCode', '==', trimmedCode).limit(1);
+          const snapshot = await query.get();
 
-      if (!snapshot.empty) {
-        const referrerDoc = snapshot.docs[0];
-        // Ensure user doesn't refer themselves (by using their own code, which is impossible at signup, but good practice)
-        if (referrerDoc.id !== data.uid) {
-            initialBalance = 10; // New user gets 10 CENT
-            // Update referrer's balance
-            const referrerRef = usersCollection.doc(referrerDoc.id);
-            await referrerRef.update({
-              balance: FieldValue.increment(300) // Referrer gets 300 CENT
-            });
-        }
+          if (!snapshot.empty) {
+            const referrerDoc = snapshot.docs[0];
+            // Ensure user doesn't refer themselves (by using their own code, which is impossible at signup, but good practice)
+            if (referrerDoc.id !== data.uid) {
+                initialBalance = 10; // New user gets 10 CENT
+                referredById = referrerDoc.id;
+                // Update referrer's balance
+                const referrerRef = usersCollection.doc(referrerDoc.id);
+                await referrerRef.update({
+                  balance: FieldValue.increment(300) // Referrer gets 300 CENT
+                });
+            }
+          }
       }
-      // If referral code is invalid, initialBalance remains 0. We don't throw an error.
     }
 
 
@@ -63,6 +66,8 @@ export async function createUser(data: { uid: string; email: string, idToken: st
       email: data.email,
       balance: initialBalance,
       referralCode: newReferralCode,
+      referredBy: referredById,
+      createdAt: FieldValue.serverTimestamp(),
       lastBonusClaim: null,
       loginStreak: 0,
     }, { merge: true });
@@ -103,6 +108,8 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
         email: decodedToken.email,
         balance: 0,
         referralCode: newReferralCode,
+        referredBy: null,
+        createdAt: FieldValue.serverTimestamp(),
         lastBonusClaim: null,
         loginStreak: 0,
       });

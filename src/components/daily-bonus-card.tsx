@@ -10,28 +10,34 @@ import { Loader2, Gift, CalendarCheck, Sparkles, Timer } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import Link from "next/link";
 
-function Countdown({ nextClaimTime }: { nextClaimTime: number }) {  
-  const calculateTimeLeft = () => {
+function Countdown({ nextClaimTime, onFinish }: { nextClaimTime: number, onFinish: () => void }) {  
+  const calculateTimeLeft = useCallback(() => {
     const difference = nextClaimTime - new Date().getTime();
     let timeLeft = {
       hours: "00",
       minutes: "00",
       seconds: "00",
+      isFinished: difference <= 0,
     };
 
     if (difference > 0) {
       timeLeft = {
+        ...timeLeft,
         hours: String(Math.floor((difference / (1000 * 60 * 60)) % 24)).padStart(2, '0'),
         minutes: String(Math.floor((difference / 1000 / 60) % 60)).padStart(2, '0'),
         seconds: String(Math.floor((difference / 1000) % 60)).padStart(2, '0'),
       };
     }
     return timeLeft;
-  };
+  }, [nextClaimTime]);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
+    if (timeLeft.isFinished) {
+      onFinish();
+      return;
+    }
     const timer = setTimeout(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
@@ -93,13 +99,22 @@ export function DailyBonusCard() {
     setIsClaiming(true);
     try {
         const result = await claimDailyBonus({ idToken });
-        if (result.success) {
+        if (result.success && result.newStreak !== undefined) {
             toast({
                 title: "Bonus Claimed!",
                 description: `You've received ${result.claimedAmount} CENT. Your new streak is ${result.newStreak} days!`
             });
-            // Refresh status to update UI
-            await fetchStatus();
+            // Immediately update the state on the client side
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            setStatus({
+              canClaim: false,
+              streak: result.newStreak,
+              bonusAmount: getBonusAmount(result.newStreak),
+              nextClaimTime: tomorrow.getTime(),
+            });
         } else {
             throw new Error(result.error || "Failed to claim bonus.");
         }
@@ -113,6 +128,17 @@ export function DailyBonusCard() {
         setIsClaiming(false);
     }
   }
+
+  const getBonusAmount = (streak: number): number => {
+    const s = streak ?? 0;
+    if (s <= 0) return 10;
+    if (s === 1) return 20;
+    if (s === 2) return 30;
+    if (s === 3) return 40;
+    if (s === 4) return 50;
+    if (s === 5) return 60;
+    return 100;
+  };
 
   const renderContent = () => {
     if (authLoading || (isLoading && !status)) {
@@ -170,7 +196,7 @@ export function DailyBonusCard() {
                         <Timer className="h-4 w-4"/>
                         <span>Next claim in</span>
                     </div>
-                    <Countdown nextClaimTime={status.nextClaimTime}/>
+                    <Countdown nextClaimTime={status.nextClaimTime} onFinish={fetchStatus}/>
                 </div>
              </div>
         )

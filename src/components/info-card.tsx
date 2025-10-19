@@ -18,6 +18,8 @@ export function InfoCard() {
     { day: "7+", amount: 100 },
   ];
 
+  const cardClassName = "shadow-lg bg-card/50 backdrop-blur-lg border border-white/10";
+
 
   return (
     <div className="space-y-8">
@@ -25,7 +27,7 @@ export function InfoCard() {
             <h1 className="text-4xl font-bold text-primary">About LibertyCent</h1>
             <p className="text-muted-foreground mt-2 text-lg">Your Path to Financial Freedom Starts Here</p>
         </div>
-        <Card className="shadow-lg">
+        <Card className={cardClassName}>
             <CardHeader>
                 <div className="flex items-start gap-4">
                     <div className="p-2 bg-primary/10 rounded-full">
@@ -51,7 +53,7 @@ export function InfoCard() {
             </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className={cardClassName}>
              <CardHeader>
                 <div className="flex items-start gap-4">
                      <div className="p-2 bg-primary/10 rounded-full">
@@ -73,7 +75,7 @@ export function InfoCard() {
             </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className={cardClassName}>
             <CardHeader>
                 <div className="flex items-start gap-4">
                     <div className="p-2 bg-primary/10 rounded-full">
@@ -99,7 +101,7 @@ export function InfoCard() {
             </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className={cardClassName}>
              <CardHeader>
                 <div className="flex items-start gap-4">
                      <div className="p-2 bg-primary/10 rounded-full">
@@ -143,7 +145,7 @@ export function InfoCard() {
             </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className={cardClassName}>
             <CardHeader>
                 <div className="flex items-start gap-4">
                     <div className="p-2 bg-primary/10 rounded-full">
@@ -162,7 +164,7 @@ export function InfoCard() {
             </CardContent>
         </Card>
         
-        <Card className="shadow-lg bg-primary/5 border-primary/20">
+        <Card className={cardClassName}>
             <CardContent className="pt-6">
                 <div className="text-center space-y-4">
                     <div className="flex justify-center">

@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Calculator, PiggyBank, CircleDollarSign, Calendar } from "lucide-react";
+import { Calculator, PiggyBank, CircleDollarSign, Calendar, TrendingUp, Wallet } from "lucide-react";
 
 const WEEKLY_RATE = 0.10; // 10%
 
@@ -53,11 +53,11 @@ export function StakingCalculatorCard() {
             Estimate your potential earnings with compound interest.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-8">
         <div className="grid md:grid-cols-2 gap-6 items-end">
              <div className="space-y-2">
-                <label htmlFor="initial-amount" className="text-sm font-medium flex items-center gap-2">
-                    <PiggyBank className="h-4 w-4 text-muted-foreground"/>
+                <label htmlFor="initial-amount" className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+                    <PiggyBank className="h-4 w-4"/>
                     Initial Amount (CENT)
                 </label>
                 <Input
@@ -70,8 +70,8 @@ export function StakingCalculatorCard() {
                 />
             </div>
             <div className="space-y-2">
-                <label htmlFor="weeks" className="text-sm font-medium flex items-center gap-2">
-                     <Calendar className="h-4 w-4 text-muted-foreground"/>
+                <label htmlFor="weeks" className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+                     <Calendar className="h-4 w-4"/>
                     Time Period ({weeks} {weeks === 1 ? 'week' : 'weeks'})
                 </label>
                 <Slider
@@ -85,18 +85,24 @@ export function StakingCalculatorCard() {
             </div>
         </div>
         
-        <div className="p-6 bg-muted rounded-xl space-y-4">
+        <div className="p-6 bg-muted rounded-xl space-y-6">
             <h3 className="font-semibold text-center text-foreground">Projected Results</h3>
-            <div className="flex justify-around text-center">
-                <div>
-                    <p className="text-sm text-muted-foreground">Total Profit</p>
-                    <p className="text-2xl font-bold text-green-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                <div className="p-4 bg-background rounded-lg">
+                    <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        Total Profit
+                    </p>
+                    <p className="text-2xl font-bold text-green-500 break-words">
                         +{totalProfit.toLocaleString('en-US', { maximumFractionDigits: 0 })} CENT
                     </p>
                 </div>
-                 <div>
-                    <p className="text-sm text-muted-foreground">New Balance</p>
-                    <p className="text-2xl font-bold text-primary">
+                 <div className="p-4 bg-background rounded-lg">
+                    <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                        <Wallet className="h-4 w-4" />
+                        New Balance
+                    </p>
+                    <p className="text-2xl font-bold text-primary break-words">
                         {projectedBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })} CENT
                     </p>
                 </div>

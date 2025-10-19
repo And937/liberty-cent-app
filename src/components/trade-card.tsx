@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -25,7 +26,7 @@ import { Separator } from "./ui/separator";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { logTransaction } from "@/app/actions";
-
+import { useLanguage } from "@/context/language-context";
 
 const CENT_PRICE_USD = 0.01;
 
@@ -80,6 +81,7 @@ export function TradeCard() {
   const { toast } = useToast();
   const { user, idToken } = useAuth();
   const router = useRouter();
+  const { t } = useLanguage();
 
   const [buyAmount, setBuyAmount] = useState("");
   const [usdCost, setUsdCost] = useState(0);
@@ -142,8 +144,8 @@ export function TradeCard() {
     } else {
       toast({
         variant: "destructive",
-        title: "Invalid Amount",
-        description: "Please enter a valid amount to transact.",
+        title: t('toast_invalid_amount_title'),
+        description: t('toast_invalid_amount_desc'),
       });
     }
   };
@@ -174,8 +176,8 @@ export function TradeCard() {
         if (result.success) {
             handleDialogClose();
             toast({
-                title: "Transaction Under Review",
-                description: "Your transaction is being processed. The tokens will be credited to your account after verification.",
+                title: t('toast_payment_success_title'),
+                description: t('toast_payment_success_desc'),
             });
         } else {
             throw new Error(result.error || "Failed to log transaction.");
@@ -183,8 +185,8 @@ export function TradeCard() {
     } catch (error: any) {
         toast({
             variant: 'destructive',
-            title: "Error",
-            description: error.message || "An unexpected error occurred.",
+            title: t('toast_error_title'),
+            description: error.message || t('toast_error_desc'),
         });
     } finally {
         setIsSubmitting(false);
@@ -194,8 +196,8 @@ export function TradeCard() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: "Copied to clipboard!",
-      description: `Copied: ${text}`,
+      title: t('toast_copied_title'),
+      description: `${t('toast_copied_desc')} ${text}`,
     });
   };
 
@@ -220,8 +222,8 @@ export function TradeCard() {
         return (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>Complete Your Purchase</AlertDialogTitle>
-              <AlertDialogDescription>Please select a payment method to continue.</AlertDialogDescription>
+              <AlertDialogTitle>{t('dialog_complete_purchase_title')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('dialog_complete_purchase_desc')}</AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
               {paymentOptions.map((option) => (
@@ -232,50 +234,51 @@ export function TradeCard() {
               ))}
             </div>
             <AlertDialogFooter className="mt-4">
-              <Button variant="outline" onClick={handleDialogClose}>Close</Button>
+              <Button variant="outline" onClick={handleDialogClose}>{t('close')}</Button>
             </AlertDialogFooter>
           </>
         );
       case 'details':
+        if (!selectedPayment) return null;
         return (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>Pay with {selectedPayment!.crypto}</AlertDialogTitle>
-              <AlertDialogDescription>To buy {buyAmount} CENT, please transfer the exact amount below to the specified address.</AlertDialogDescription>
+              <AlertDialogTitle>{t('dialog_pay_with')} {selectedPayment.crypto}</AlertDialogTitle>
+              <AlertDialogDescription>{t('dialog_pay_with_desc_1')} {buyAmount} {t('dialog_pay_with_desc_2')}</AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-4">
               <div className="p-3 border rounded-lg bg-muted/50 space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Amount to Pay</p>
+                  <p className="text-sm font-semibold text-foreground">{t('dialog_amount_to_pay')}</p>
                   <div className="flex items-center justify-between gap-2 mt-1">
-                    <Input readOnly value={`${selectedCryptoAmount} ${selectedPayment!.crypto.split(' ')[0]}`} className="text-sm text-muted-foreground font-mono" />
+                    <Input readOnly value={`${selectedCryptoAmount} ${selectedPayment.crypto.split(' ')[0]}`} className="text-sm text-muted-foreground font-mono" />
                     <Button variant="outline" size="icon" onClick={() => copyToClipboard(selectedCryptoAmount)}><Copy className="h-4 w-4"/></Button>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Address</p>
+                  <p className="text-sm font-semibold text-foreground">{t('dialog_address')}</p>
                   <div className="flex items-center justify-between gap-2 mt-1">
-                    <Input readOnly value={selectedPayment!.address} className="text-sm text-muted-foreground truncate" />
-                    <Button variant="outline" size="icon" onClick={() => copyToClipboard(selectedPayment!.address)}><Copy className="h-4 w-4"/></Button>
+                    <Input readOnly value={selectedPayment.address} className="text-sm text-muted-foreground truncate" />
+                    <Button variant="outline" size="icon" onClick={() => copyToClipboard(selectedPayment.address)}><Copy className="h-4 w-4"/></Button>
                   </div>
                 </div>
-                {selectedPayment!.memo && (
+                {selectedPayment.memo && (
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Memo / Comment</p>
+                    <p className="text-sm font-semibold text-foreground">{t('dialog_memo')}</p>
                     <div className="flex items-center justify-between gap-2 mt-1">
-                      <Input readOnly value={selectedPayment!.memo} className="text-sm text-muted-foreground" />
-                      <Button variant="outline" size="icon" onClick={() => copyToClipboard(selectedPayment!.memo!)}><Copy className="h-4 w-4"/></Button>
+                      <Input readOnly value={selectedPayment.memo} className="text-sm text-muted-foreground" />
+                      <Button variant="outline" size="icon" onClick={() => copyToClipboard(selectedPayment.memo!)}><Copy className="h-4 w-4"/></Button>
                     </div>
                   </div>
                 )}
               </div>
             </div>
             <AlertDialogFooter className="mt-4">
-              <Button variant="ghost" onClick={handleBackToSelection} disabled={isSubmitting}><ChevronLeft className="h-4 w-4 mr-2"/>Back</Button>
+              <Button variant="ghost" onClick={handleBackToSelection} disabled={isSubmitting}><ChevronLeft className="h-4 w-4 mr-2"/>{t('back')}</Button>
               <div className="flex-grow"></div>
               <Button onClick={handlePaymentPaid} disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                I Paid
+                {t('i_paid')}
               </Button>
             </AlertDialogFooter>
           </>
@@ -289,13 +292,13 @@ export function TradeCard() {
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-2xl font-bold">Buy CENT</CardTitle>
+              <CardTitle className="text-2xl font-bold">{t('trade_card_title')}</CardTitle>
               <CardDescription>
-                Instantly buy CENT tokens.
+                {t('trade_card_description')}
               </CardDescription>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Current Price</p>
+              <p className="text-sm text-muted-foreground">{t('trade_card_price')}</p>
               <p className="text-2xl font-bold text-primary">
                 ${CENT_PRICE_USD.toFixed(4)}
                 <span className="text-sm text-muted-foreground ml-1">/CENT</span>
@@ -307,7 +310,7 @@ export function TradeCard() {
             <div className="space-y-4 pt-4">
               <div className="space-y-2">
                 <label htmlFor="buy-amount" className="text-sm font-medium">
-                  Amount to Buy (CENT)
+                  {t('trade_card_amount')}
                 </label>
                 <Input
                   id="buy-amount"
@@ -322,7 +325,7 @@ export function TradeCard() {
               {usdCost > 0 && (
                 <div className="text-sm">
                   <p>
-                    Cost:{" "}
+                    {t('trade_card_cost')}{" "}
                     <span className="font-bold text-foreground">
                       ${usdCost.toFixed(2)}
                     </span>
@@ -337,7 +340,7 @@ export function TradeCard() {
                 disabled={isLoadingRates && paymentOptions.length === 0}
               >
                 {isLoadingRates && paymentOptions.length === 0 ? <Loader2 className="animate-spin mr-2" /> : null}
-                Buy CENT
+                {t('trade_card_buy_button')}
               </Button>
             </div>
         </CardContent>
@@ -345,7 +348,7 @@ export function TradeCard() {
             <>
                 <Separator className="my-4"/>
                 <CardFooter className="flex-col items-start space-y-2">
-                     <h3 className="text-sm font-semibold text-foreground">Equivalent in other currencies</h3>
+                     <h3 className="text-sm font-semibold text-foreground">{t('trade_card_equivalents')}</h3>
                      {isLoadingRates && paymentOptions.length === 0 ? (
                          <div className="flex items-center justify-center w-full p-4">
                              <Loader2 className="h-6 w-6 animate-spin text-primary"/>

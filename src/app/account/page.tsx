@@ -11,12 +11,14 @@ import { Loader2, Mail, Copy, Gift, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
+import { useLanguage } from "@/context/language-context";
 
 export default function AccountPage() {
   const { user, loading: authLoading, idToken } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-
+  const { t } = useLanguage();
+  
   const [balance, setBalance] = useState<number | null>(null);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [isBalanceLoading, setIsBalanceLoading] = useState(true);
@@ -39,11 +41,11 @@ export default function AccountPage() {
             setBalance(result.balance ?? 0);
             setReferralCode(result.referralCode ?? null);
           } else {
-            setError(result.error ?? "Could not retrieve account data.");
+            setError(result.error ?? t('account_error_data'));
             setBalance(0);
           }
         } catch (e) {
-          setError("An unexpected error occurred while fetching account data.");
+          setError(t('account_error_unexpected'));
           setBalance(0);
         } finally {
           setIsBalanceLoading(false);
@@ -54,13 +56,13 @@ export default function AccountPage() {
     if (!authLoading && user) {
       fetchAccountData();
     }
-  }, [user, authLoading, idToken]);
+  }, [user, authLoading, idToken, t]);
 
   const copyToClipboard = (text: string, subject: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: `${subject} Copied!`,
-      description: `Copied ${text} to clipboard.`,
+      title: t('account_toast_copied_title', { subject }),
+      description: t('account_toast_copied_desc', { text }),
     });
   };
 
@@ -72,14 +74,15 @@ export default function AccountPage() {
     );
   }
 
-  const siteLink = "https://libertycent.com";
+  const siteLink = typeof window !== 'undefined' ? `${window.location.origin}?ref=${referralCode}` : '';
+
 
   return (
     <div className="container mx-auto p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-8">
         <div>
-            <h1 className="text-3xl font-bold mb-2">Personal Account</h1>
-            <p className="text-muted-foreground">This is your personal account page. You can view your current balance here.</p>
+            <h1 className="text-3xl font-bold mb-2">{t('account_title')}</h1>
+            <p className="text-muted-foreground">{t('account_description')}</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -87,7 +90,7 @@ export default function AccountPage() {
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Mail className="h-5 w-5 text-muted-foreground"/>
-                        <span>Account Email</span>
+                        <span>{t('account_email')}</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -99,7 +102,7 @@ export default function AccountPage() {
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Gift className="h-5 w-5 text-muted-foreground"/>
-                        <span>Your Referral Info</span>
+                        <span>{t('account_referral_title')}</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -111,26 +114,17 @@ export default function AccountPage() {
                     ) : referralCode ? (
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm text-muted-foreground">Your Code</label>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <p className="text-sm font-medium bg-muted p-2 rounded-md flex-grow">{referralCode}</p>
-                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(referralCode, 'Referral Code')}>
-                                        <Copy className="h-4 w-4"/>
-                                    </Button>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="text-sm text-muted-foreground">Site Link</label>
+                                <label className="text-sm text-muted-foreground">{t('account_referral_link')}</label>
                                  <div className="flex items-center gap-2 mt-1">
                                     <p className="text-sm font-medium text-blue-500 p-2 rounded-md bg-muted flex-grow break-all">{siteLink}</p>
-                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(siteLink, 'Site Link')}>
+                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(siteLink, t('account_referral_link_subject'))}>
                                         <LinkIcon className="h-4 w-4"/>
                                     </Button>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                         <p className="text-sm text-muted-foreground">No referral code found.</p>
+                         <p className="text-sm text-muted-foreground">{t('account_referral_not_found')}</p>
                     )}
                 </CardContent>
             </Card>
@@ -139,7 +133,7 @@ export default function AccountPage() {
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Your CENT Balance:</CardTitle>
+            <CardTitle>{t('account_balance_title')}</CardTitle>
           </CardHeader>
           <CardContent>
             {isBalanceLoading ? (

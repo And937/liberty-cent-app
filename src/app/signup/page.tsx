@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/context/auth-context";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { createUser } from "@/app/actions";
-
+import { useLanguage } from "@/context/language-context";
 
 function SignupForm() {
   const [email, setEmail] = useState("");
@@ -22,12 +23,15 @@ function SignupForm() {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Pre-fill referral code from URL query `?ref=...`
-    const refCode = searchParams.get('ref');
-    if (refCode) {
-      setReferralCode(refCode);
+    if (searchParams) {
+      const refCode = searchParams.get('ref');
+      if (refCode) {
+        setReferralCode(refCode);
+      }
     }
   }, [searchParams]);
 
@@ -57,20 +61,20 @@ function SignupForm() {
         console.error("Failed to create user document in Firestore:", result.error);
         toast({
           variant: "destructive",
-          title: "Signup Partially Successful",
-          description: "Your account was created, but we couldn't set up your profile. Please contact support."
+          title: t('signup_toast_partial_title'),
+          description: t('signup_toast_partial_desc')
         });
       } else {
          toast({
-          title: "Signup Successful!",
-          description: "Welcome to LibertyCent. You will be redirected to your account."
+          title: t('signup_toast_success_title'),
+          description: t('signup_toast_success_desc')
         });
       }
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Signup Failed",
-        description: error.message || "An unknown error occurred during signup.",
+        title: t('signup_toast_failed_title'),
+        description: error.message || t('signup_toast_failed_desc'),
       });
     } finally {
       setIsLoading(false);
@@ -89,13 +93,13 @@ function SignupForm() {
     <div className="flex items-center justify-center min-h-screen bg-background -mt-16">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create an account</CardTitle>
-          <CardDescription>Enter your email and password to create an account.</CardDescription>
+          <CardTitle className="text-2xl">{t('signup_title')}</CardTitle>
+          <CardDescription>{t('signup_description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('signup_email_label')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -106,8 +110,7 @@ function SignupForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
+              <Label htmlFor="password">{t('signup_password_label')}</Label>              <Input
                 id="password"
                 type="password"
                 value={password}
@@ -117,24 +120,24 @@ function SignupForm() {
               />
             </div>
              <div className="space-y-2">
-              <Label htmlFor="referral">Referral Code (Optional)</Label>
+              <Label htmlFor="referral">{t('signup_referral_label')}</Label>
               <Input
                 id="referral"
                 type="text"
                 value={referralCode}
                 onChange={(e) => setReferralCode(e.target.value)}
-                placeholder="Enter referral code"
+                placeholder={t('signup_referral_placeholder')}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? "Signing up..." : "Sign Up"}
+              {isLoading ? t('signup_button_loading') : t('signup_button')}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
-            Already have an account?{" "}
+            {t('signup_login_prompt')}{" "}
             <Link href="/login" className="underline text-primary">
-              Login
+              {t('signup_login_link')}
             </Link>
           </div>
         </CardContent>

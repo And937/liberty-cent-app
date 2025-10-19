@@ -1,17 +1,18 @@
 
-import type {Metadata} from 'next';
-import {Inter} from 'next/font/google';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/context/auth-context';
 import { Header } from '@/components/header';
+import { LanguageProvider } from '@/context/language-context';
 
 export const metadata: Metadata = {
   title: 'LibertyCent',
   description: 'Buy and sell CENT with confidence.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.png',
+    icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
 };
@@ -23,9 +24,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = 'en'; // Hardcoding to 'en' after removing i18n
+
   return (
-    <html lang={locale}>
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -36,13 +37,15 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.className} font-body antialiased`}>
           <AuthProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-            </div>
-            <Toaster />
+            <LanguageProvider>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1">
+                  {children}
+                </main>
+              </div>
+              <Toaster />
+            </LanguageProvider>
           </AuthProvider>
       </body>
     </html>

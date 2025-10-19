@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -5,12 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, PiggyBank, CircleDollarSign, Calendar, TrendingUp, Wallet } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
 
 const WEEKLY_RATE = 0.10; // 10%
 
 export function StakingCalculatorCard() {
   const [initialAmount, setInitialAmount] = useState(1000);
   const [weeks, setWeeks] = useState(52);
+  const { t } = useLanguage();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -48,9 +51,9 @@ export function StakingCalculatorCard() {
                 <Calculator className="h-8 w-8 text-primary" />
             </div>
         </div>
-        <CardTitle className="text-2xl font-bold text-center">Staking Profit Calculator</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">{t('staking_calculator_title')}</CardTitle>
         <CardDescription className="text-center">
-            Estimate your potential earnings with compound interest.
+            {t('staking_calculator_description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
@@ -58,7 +61,7 @@ export function StakingCalculatorCard() {
              <div className="space-y-2">
                 <label htmlFor="initial-amount" className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
                     <PiggyBank className="h-4 w-4"/>
-                    Initial Amount (CENT)
+                    {t('staking_calculator_initial_amount')}
                 </label>
                 <Input
                   id="initial-amount"
@@ -72,7 +75,7 @@ export function StakingCalculatorCard() {
             <div className="space-y-2">
                 <label htmlFor="weeks" className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
                      <Calendar className="h-4 w-4"/>
-                    Time Period ({weeks} {weeks === 1 ? 'week' : 'weeks'})
+                    {t('staking_calculator_period', { count: weeks })}
                 </label>
                 <Slider
                     id="weeks"
@@ -86,12 +89,12 @@ export function StakingCalculatorCard() {
         </div>
         
         <div className="p-6 bg-muted rounded-xl space-y-6">
-            <h3 className="font-semibold text-center text-foreground">Projected Results</h3>
+            <h3 className="font-semibold text-center text-foreground">{t('staking_calculator_results')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
                 <div className="p-4 bg-background rounded-lg">
                     <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
                         <TrendingUp className="h-4 w-4" />
-                        Total Profit
+                        {t('staking_calculator_total_profit')}
                     </p>
                     <p className="text-2xl font-bold text-green-500 break-words">
                         +{totalProfit.toLocaleString('en-US', { maximumFractionDigits: 0 })} CENT
@@ -100,7 +103,7 @@ export function StakingCalculatorCard() {
                  <div className="p-4 bg-background rounded-lg">
                     <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
                         <Wallet className="h-4 w-4" />
-                        New Balance
+                        {t('staking_calculator_new_balance')}
                     </p>
                     <p className="text-2xl font-bold text-primary break-words">
                         {projectedBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })} CENT

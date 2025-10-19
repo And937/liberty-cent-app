@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -6,9 +7,10 @@ import { getDailyBonusStatus, claimDailyBonus } from "@/app/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Gift, CalendarCheck, Sparkles, Timer } from "lucide-react";
+import { Loader2, Gift, CalendarCheck, Timer } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
-import Link from "next/link";
+import Link from 'next/link';
+import { useLanguage } from "@/context/language-context";
 
 function Countdown({ nextClaimTime, onFinish }: { nextClaimTime: number, onFinish: () => void }) {  
   const calculateTimeLeft = useCallback(() => {
@@ -55,6 +57,7 @@ function Countdown({ nextClaimTime, onFinish }: { nextClaimTime: number, onFinis
 export function DailyBonusCard() {
   const { user, loading: authLoading, idToken } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const [status, setStatus] = useState<{
     canClaim?: boolean;
@@ -124,6 +127,8 @@ export function DailyBonusCard() {
             title: "Error Claiming Bonus",
             description: e.message || "An unexpected error occurred."
         });
+        // Re-fetch status on error to get the true state from the server
+        fetchStatus();
     } finally {
         setIsClaiming(false);
     }

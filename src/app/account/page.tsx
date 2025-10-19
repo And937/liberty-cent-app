@@ -74,7 +74,7 @@ export default function AccountPage() {
     );
   }
 
-  const siteLink = typeof window !== 'undefined' ? `${window.location.origin}?ref=${referralCode}` : '';
+  const siteLink = "https://libertycent.com/";
 
 
   return (
@@ -107,17 +107,26 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent>
                     {isBalanceLoading ? (
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                             <Skeleton className="h-6 w-full" />
-                            <Skeleton className="h-10 w-24" />
+                            <Skeleton className="h-6 w-full" />
                         </div>
                     ) : referralCode ? (
                         <div className="space-y-4">
+                             <div>
+                                <label className="text-sm text-muted-foreground">{t('account_referral_code_label')}</label>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <p className="text-sm font-medium p-2 rounded-md bg-muted flex-grow break-all">{referralCode}</p>
+                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(referralCode, t('account_referral_code_subject'))}>
+                                        <Copy className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
                             <div>
-                                <label className="text-sm text-muted-foreground">{t('account_referral_link')}</label>
+                                <label className="text-sm text-muted-foreground">{t('account_site_link_label')}</label>
                                  <div className="flex items-center gap-2 mt-1">
                                     <p className="text-sm font-medium text-blue-500 p-2 rounded-md bg-muted flex-grow break-all">{siteLink}</p>
-                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(siteLink, t('account_referral_link_subject'))}>
+                                    <Button size="sm" variant="outline" onClick={() => copyToClipboard(siteLink, t('account_site_link_subject'))}>
                                         <LinkIcon className="h-4 w-4"/>
                                     </Button>
                                 </div>

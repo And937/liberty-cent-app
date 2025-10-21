@@ -95,14 +95,16 @@ export function Header() {
                     {/* Overlay for glass effect */}
                     <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"></div>
 
-                    <div className="relative flex flex-col h-full z-10">
-                        <div className="flex justify-between items-center p-4 border-b border-white/10">
-                            <h2 className="text-lg font-semibold text-white">{t('menu')}</h2>
-                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="text-white hover:text-white hover:bg-white/10">
+                    <div className="relative flex flex-col h-full z-10 p-4">
+                        <div className="flex justify-end items-center mb-4">
+                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="text-white/70 hover:text-white hover:bg-white/10">
                                 <X className="h-6 w-6" />
                             </Button>
                         </div>
-                        <nav className="flex-1 flex flex-col gap-3 p-4">
+                        <div className="text-center mb-8">
+                             <h2 className="text-3xl font-bold text-white [text-shadow:0_0_10px_theme(colors.white/0.5)]">{t('menu')}</h2>
+                        </div>
+                        <nav className="flex-1 flex flex-col gap-3">
                             {navLinks.map((link) => (
                             <Link 
                                 key={link.href} 
@@ -114,7 +116,7 @@ export function Header() {
                             </Link>
                             ))}
                         </nav>
-                        <div className="p-4 border-t border-white/10 mt-auto">
+                        <div className="border-t border-white/10 mt-auto pt-4">
                             {loading ? null : user ? (
                                 <Button onClick={handleLogout} variant="outline" className="w-full bg-transparent text-white hover:bg-white/10 hover:text-white">{t('logout')}</Button>
                             ) : (

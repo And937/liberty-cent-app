@@ -28,7 +28,7 @@ export default function SupportPage() {
                     <p className="text-muted-foreground mt-2">{t('support_description')}</p>
                 </div>
                 
-                <Card className="shadow-lg">
+                <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10">
                     <CardHeader className="text-center">
                         <div className="flex justify-center items-center mb-4">
                             <div className="p-3 bg-primary/10 rounded-full">

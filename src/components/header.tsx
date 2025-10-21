@@ -70,52 +70,60 @@ export function Header() {
 
         {/* --- Mobile Header --- */}
         <div className="md:hidden flex flex-col gap-4">
-          <div className="flex justify-center">
-            <Link href="/" className="flex items-center gap-3">
-              <LibertyCentLogo />
-              <h1 className="text-2xl font-bold text-foreground">
-                LibertyCent
-              </h1>
-            </Link>
-          </div>
-          <div className="flex justify-between items-center">
-            <LanguageSwitcher />
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-center p-4 border-b">
-                     <h2 className="text-lg font-semibold">{t('menu')}</h2>
-                     <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
-                        <X className="h-6 w-6" />
-                     </Button>
-                  </div>
-                  <nav className="flex-1 flex flex-col gap-4 p-4">
-                    {navLinks.map((link) => (
-                      <Link key={link.href} href={link.href} onClick={handleLinkClick} className="text-lg font-medium text-foreground hover:text-primary">
-                        {link.label}
-                      </Link>
-                    ))}
-                  </nav>
-                  <div className="p-4 border-t mt-auto">
-                     {loading ? null : user ? (
-                        <Button onClick={handleLogout} variant="outline" className="w-full">{t('logout')}</Button>
-                      ) : (
-                        <div className="flex flex-col gap-2">
-                          <Button asChild variant="ghost" className="w-full" onClick={handleLinkClick}><Link href="/login">{t('login')}</Link></Button>
-                          <Button asChild className="w-full" onClick={handleLinkClick}><Link href="/signup">{t('signup')}</Link></Button>
-                        </div>
-                      )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+            <div className="flex justify-center items-center relative">
+                <Link href="/" className="flex items-center gap-3">
+                    <LibertyCentLogo />
+                    <h1 className="text-2xl font-bold text-foreground">
+                        LibertyCent
+                    </h1>
+                </Link>
+            </div>
+            <div className="flex justify-between items-center">
+                <LanguageSwitcher />
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Open menu</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent 
+                    side="right" 
+                    className="w-[300px] sm:w-[400px] bg-muted/70 backdrop-blur-lg border-l-white/10"
+                >
+                    <div className="flex flex-col h-full">
+                    <div className="flex justify-between items-center p-4 border-b border-white/10">
+                        <h2 className="text-lg font-semibold">{t('menu')}</h2>
+                        <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
+                            <X className="h-6 w-6" />
+                        </Button>
+                    </div>
+                    <nav className="flex-1 flex flex-col gap-3 p-4">
+                        {navLinks.map((link) => (
+                        <Link 
+                            key={link.href} 
+                            href={link.href} 
+                            onClick={handleLinkClick} 
+                            className="text-lg font-medium text-foreground text-center p-3 rounded-full bg-card/50 backdrop-blur-sm border border-white/10 hover:bg-card/70"
+                        >
+                            {link.label}
+                        </Link>
+                        ))}
+                    </nav>
+                    <div className="p-4 border-t border-white/10 mt-auto">
+                        {loading ? null : user ? (
+                            <Button onClick={handleLogout} variant="outline" className="w-full">{t('logout')}</Button>
+                        ) : (
+                            <div className="flex flex-col gap-2">
+                            <Button asChild variant="ghost" className="w-full" onClick={handleLinkClick}><Link href="/login">{t('login')}</Link></Button>
+                            <Button asChild className="w-full" onClick={handleLinkClick}><Link href="/signup">{t('signup')}</Link></Button>
+                            </div>
+                        )}
+                    </div>
+                    </div>
+                </SheetContent>
+                </Sheet>
+            </div>
         </div>
       </div>
     </header>

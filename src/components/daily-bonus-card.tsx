@@ -34,7 +34,7 @@ function Countdown({ nextClaimTime, onFinish }: { nextClaimTime: number, onFinis
     return timeLeft;
   }, [nextClaimTime]);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
 
   useEffect(() => {
     if (timeLeft.isFinished) {
@@ -54,6 +54,16 @@ function Countdown({ nextClaimTime, onFinish }: { nextClaimTime: number, onFinis
     </div>
   );
 }
+
+const getBonusAmount = (streak: number): number => {
+    if (streak <= 0) return 10; // Day 1
+    if (streak === 1) return 20; // Day 2
+    if (streak === 2) return 30; // Day 3
+    if (streak === 3) return 40; // Day 4
+    if (streak === 4) return 50; // Day 5
+    if (streak === 5) return 60; // Day 6
+    return 100; // Day 7 and onwards
+};
 
 export function DailyBonusCard() {
   const { user, loading: authLoading, idToken } = useAuth();
@@ -134,17 +144,6 @@ export function DailyBonusCard() {
         setIsClaiming(false);
     }
   }
-
-  const getBonusAmount = (streak: number): number => {
-    const s = streak ?? 0;
-    if (s <= 0) return 10;
-    if (s === 1) return 20;
-    if (s === 2) return 30;
-    if (s === 3) return 40;
-    if (s === 4) return 50;
-    if (s === 5) return 60;
-    return 100;
-  };
 
   const renderContent = () => {
     if (authLoading || (isLoading && !status)) {

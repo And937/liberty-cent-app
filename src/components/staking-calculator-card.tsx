@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Calculator, PiggyBank, CircleDollarSign, Calendar, TrendingUp, Wallet } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 
-const WEEKLY_RATE = 0.10; // 10%
+const WEEKLY_RATE = 0.06; // 6%
 
 export function StakingCalculatorCard() {
   const [initialAmount, setInitialAmount] = useState(1000);

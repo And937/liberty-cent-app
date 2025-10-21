@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
 
-const WEEKLY_RATE = 0.10; // 10%
+const WEEKLY_RATE = 0.06; // 6%
 const APR = ((1 + WEEKLY_RATE) ** 52 - 1); // Compound annual rate
 
 export function StakingCard() {

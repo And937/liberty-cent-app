@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
     snapshot.forEach(doc => {
       const userData = doc.data();
       const currentBalance = userData.balance;
-      const weeklyReward = currentBalance * 0.10; // 10%
+      const weeklyReward = currentBalance * 0.06; // 6%
       
       const userDocRef = usersRef.doc(doc.id);
       batch.update(userDocRef, { balance: FieldValue.increment(weeklyReward) });

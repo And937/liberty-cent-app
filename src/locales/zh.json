@@ -47,7 +47,7 @@
     "info_staking_p1": "我们希望您的资产为您工作。质押计划是我们奖励您信任和长期支持的方式。一切都是自动发生的，没有锁定期或复杂的操作要求。",
     "info_staking_subtitle": "它是如何工作的:",
     "info_staking_item1_title": "每周收入",
-    "info_staking_item1_desc": "每个星期天，系统会自动将您当前余额的 **10%** 存入您的账户。",
+    "info_staking_item1_desc": "每个星期天，系统会自动将您当前余额的 **6%** 存入您的账户。",
     "info_staking_item2_title": "复利的力量",
     "info_staking_item2_desc": "奖金会添加到您的主余额中，下一周的奖励会更大。这就是复利的力量。",
     "info_staking_item3_title": "完全自由",

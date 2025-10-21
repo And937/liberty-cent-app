@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/context/auth-context";
 import { getUserBalance } from "@/app/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
 
 const WEEKLY_RATE = 0.06; // 6%
-const APR = ((1 + WEEKLY_RATE) ** 52 - 1); // Compound annual rate
 
 export function StakingCard() {
   const { user, loading: authLoading, idToken } = useAuth();
@@ -21,6 +20,8 @@ export function StakingCard() {
   const [balance, setBalance] = useState<number | null>(null);
   const [isBalanceLoading, setIsBalanceLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const APR = (1 + WEEKLY_RATE) ** 52 - 1;
 
   useEffect(() => {
     async function fetchBalance() {

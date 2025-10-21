@@ -159,5 +159,23 @@
     "signup_toast_success_title": "注册成功！",
     "signup_toast_success_desc": "欢迎来到 LibertyCent。您将被重定向到您的账户。",
     "signup_toast_failed_title": "注册失败",
-    "signup_toast_failed_desc": "注册过程中发生未知错误。"
+    "signup_toast_failed_desc": "注册过程中发生未知错误。",
+
+    "bonus_card_title": "每日登录奖励",
+    "bonus_card_description": "每天登录以增加您的奖励。不要中断连胜！",
+    "bonus_login_prompt": "登录以领取您的每日奖励并开始连胜！",
+    "bonus_login_button": "登录领取",
+    "bonus_can_claim_desc": "您已连续登录 {streak} 天。今天的奖励已准备好！",
+    "bonus_button_claim": "领取您的奖励",
+    "bonus_button_claiming": "领取中...",
+    "bonus_already_claimed_desc": "您已连续登录 {streak} 天。明天再来领取下一个奖励！",
+    "bonus_next_claim_in": "下一次领取在",
+    "bonus_no_info": "没有可用的奖励信息。",
+    "bonus_toast_success_title": "奖励已领取！",
+    "bonus_toast_success_desc": "您已收到 {amount} CENT。您的新连胜纪录是 {streak} 天！",
+    "bonus_toast_error_title": "领取奖励时出错",
+    "bonus_error_status": "无法检索每日奖励状态。",
+    "bonus_error_unexpected_status": "获取奖励状态时发生意外错误。",
+    "bonus_error_claim_failed": "领取奖励失败。",
+    "bonus_error_unexpected_claim": "发生意外错误。"
 }

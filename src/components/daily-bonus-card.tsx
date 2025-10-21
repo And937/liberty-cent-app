@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useLanguage } from "@/context/language-context";
 
 function Countdown({ nextClaimTime, onFinish }: { nextClaimTime: number, onFinish: () => void }) {  
+  const { t } = useLanguage();
   const calculateTimeLeft = useCallback(() => {
     const difference = nextClaimTime - new Date().getTime();
     let timeLeft = {
@@ -78,17 +79,17 @@ export function DailyBonusCard() {
         if (result.success) {
           setStatus(result);
         } else {
-          setError(result.error ?? "Could not retrieve daily bonus status.");
+          setError(result.error ?? t('bonus_error_status'));
         }
       } catch (e) {
-        setError("An unexpected error occurred while fetching bonus status.");
+        setError(t('bonus_error_unexpected_status'));
       } finally {
         setIsLoading(false);
       }
     } else {
         setIsLoading(false);
     }
-  }, [user, idToken]);
+  }, [user, idToken, t]);
 
   useEffect(() => {
     if (!authLoading) {
@@ -104,8 +105,8 @@ export function DailyBonusCard() {
         const result = await claimDailyBonus({ idToken });
         if (result.success && result.newStreak !== undefined) {
             toast({
-                title: "Bonus Claimed!",
-                description: `You've received ${result.claimedAmount} CENT. Your new streak is ${result.newStreak} days!`
+                title: t('bonus_toast_success_title'),
+                description: t('bonus_toast_success_desc', { amount: result.claimedAmount ?? 0, streak: result.newStreak })
             });
             // Immediately update the state on the client side
             const tomorrow = new Date();
@@ -119,13 +120,13 @@ export function DailyBonusCard() {
               nextClaimTime: tomorrow.getTime(),
             });
         } else {
-            throw new Error(result.error || "Failed to claim bonus.");
+            throw new Error(result.error || t('bonus_error_claim_failed'));
         }
     } catch(e: any) {
         toast({
             variant: "destructive",
-            title: "Error Claiming Bonus",
-            description: e.message || "An unexpected error occurred."
+            title: t('bonus_toast_error_title'),
+            description: e.message || t('bonus_error_unexpected_claim')
         });
         // Re-fetch status on error to get the true state from the server
         fetchStatus();
@@ -158,9 +159,9 @@ export function DailyBonusCard() {
     if (!user) {
         return (
             <div className="text-center text-muted-foreground py-6">
-                <p className="mb-4">Log in to claim your daily bonus and start a streak!</p>
+                <p className="mb-4">{t('bonus_login_prompt')}</p>
                 <Button asChild>
-                    <Link href="/login">Login to Claim</Link>
+                    <Link href="/login">{t('bonus_login_button')}</Link>
                 </Button>
             </div>
         )
@@ -174,8 +175,7 @@ export function DailyBonusCard() {
         return (
             <div className="text-center space-y-4">
                 <p className="text-muted-foreground">
-                    You have a login streak of <span className="font-bold text-primary">{status.streak ?? 0} days</span>.
-                    Your bonus for today is ready!
+                    {t('bonus_can_claim_desc', { streak: status.streak ?? 0})}
                 </p>
                 <div className="flex justify-center items-baseline gap-2">
                     <span className="text-5xl font-bold text-primary">{status.bonusAmount ?? 10}</span>
@@ -183,7 +183,7 @@ export function DailyBonusCard() {
                 </div>
                 <Button size="lg" className="w-full sm:w-auto" onClick={handleClaim} disabled={isClaiming}>
                     {isClaiming ? <Loader2 className="animate-spin mr-2"/> : <Gift className="mr-2"/>}
-                    {isClaiming ? 'Claiming...' : 'Claim Your Bonus'}
+                    {isClaiming ? t('bonus_button_claiming') : t('bonus_button_claim')}
                 </Button>
             </div>
         )
@@ -193,13 +193,12 @@ export function DailyBonusCard() {
         return (
              <div className="text-center space-y-4">
                 <p className="text-muted-foreground">
-                    You have a login streak of <span className="font-bold text-primary">{status.streak ?? 0} days</span>.
-                    Come back tomorrow for your next bonus!
+                   {t('bonus_already_claimed_desc', { streak: status.streak ?? 0 })}
                 </p>
                 <div className="p-4 bg-muted rounded-lg inline-flex flex-col items-center gap-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Timer className="h-4 w-4"/>
-                        <span>Next claim in</span>
+                        <span>{t('bonus_next_claim_in')}</span>
                     </div>
                     <Countdown nextClaimTime={status.nextClaimTime} onFinish={fetchStatus}/>
                 </div>
@@ -207,11 +206,11 @@ export function DailyBonusCard() {
         )
     }
 
-    return <p className="text-muted-foreground text-center">No bonus information available.</p>;
+    return <p className="text-muted-foreground text-center">{t('bonus_no_info')}</p>;
   }
 
   return (
-    <Card className="shadow-lg">
+    <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10">
       <CardHeader className="text-center">
         <div className="flex justify-center items-center mb-2">
             <div className="p-3 bg-primary/10 rounded-full">
@@ -219,10 +218,10 @@ export function DailyBonusCard() {
             </div>
         </div>
         <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
-            Daily Login Bonus
+            {t('bonus_card_title')}
         </CardTitle>
         <CardDescription>
-            Log in every day to increase your reward. Don't break the streak!
+            {t('bonus_card_description')}
         </CardDescription>
       </CardHeader>
       <CardContent>

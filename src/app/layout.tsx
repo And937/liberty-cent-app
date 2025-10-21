@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Buy and sell CENT with confidence.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.png', // Corrected path
+    icon: '/favicon.png',
     apple: '/apple-touch-icon.png',
   },
 };

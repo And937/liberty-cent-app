@@ -44,7 +44,7 @@ export function StakingCalculatorCard() {
   }, [initialAmount, weeks]);
 
   return (
-    <Card className="shadow-lg">
+    <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10">
       <CardHeader>
         <div className="flex justify-center items-center mb-2">
             <div className="p-3 bg-primary/10 rounded-full">

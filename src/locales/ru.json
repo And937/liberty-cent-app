@@ -159,5 +159,23 @@
     "signup_toast_success_title": "Регистрация успешна!",
     "signup_toast_success_desc": "Добро пожаловать в LibertyCent. Вы будете перенаправлены в свой аккаунт.",
     "signup_toast_failed_title": "Ошибка регистрации",
-    "signup_toast_failed_desc": "Во время регистрации произошла неизвестная ошибка."
+    "signup_toast_failed_desc": "Во время регистрации произошла неизвестная ошибка.",
+
+    "bonus_card_title": "Ежедневный бонус за вход",
+    "bonus_card_description": "Заходите каждый день, чтобы увеличить награду. Не прерывайте серию!",
+    "bonus_login_prompt": "Войдите, чтобы получить ежедневный бонус и начать серию!",
+    "bonus_login_button": "Войти чтобы получить",
+    "bonus_can_claim_desc": "Ваша серия входов — {streak} дней. Ваш бонус на сегодня готов!",
+    "bonus_button_claim": "Получить бонус",
+    "bonus_button_claiming": "Получение...",
+    "bonus_already_claimed_desc": "Ваша серия входов — {streak} дней. Возвращайтесь завтра за следующим бонусом!",
+    "bonus_next_claim_in": "Следующий бонус через",
+    "bonus_no_info": "Нет информации о бонусе.",
+    "bonus_toast_success_title": "Бонус получен!",
+    "bonus_toast_success_desc": "Вы получили {amount} CENT. Ваша новая серия — {streak} дней!",
+    "bonus_toast_error_title": "Ошибка получения бонуса",
+    "bonus_error_status": "Не удалось получить статус ежедневного бонуса.",
+    "bonus_error_unexpected_status": "Произошла непредвиденная ошибка при получении статуса бонуса.",
+    "bonus_error_claim_failed": "Не удалось получить бонус.",
+    "bonus_error_unexpected_claim": "Произошла непредвиденная ошибка."
 }

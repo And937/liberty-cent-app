@@ -159,5 +159,23 @@
     "signup_toast_success_title": "Signup Successful!",
     "signup_toast_success_desc": "Welcome to LibertyCent. You will be redirected to your account.",
     "signup_toast_failed_title": "Signup Failed",
-    "signup_toast_failed_desc": "An unknown error occurred during signup."
+    "signup_toast_failed_desc": "An unknown error occurred during signup.",
+
+    "bonus_card_title": "Daily Login Bonus",
+    "bonus_card_description": "Log in every day to increase your reward. Don't break the streak!",
+    "bonus_login_prompt": "Log in to claim your daily bonus and start a streak!",
+    "bonus_login_button": "Login to Claim",
+    "bonus_can_claim_desc": "You have a login streak of {streak} days. Your bonus for today is ready!",
+    "bonus_button_claim": "Claim Your Bonus",
+    "bonus_button_claiming": "Claiming...",
+    "bonus_already_claimed_desc": "You have a login streak of {streak} days. Come back tomorrow for your next bonus!",
+    "bonus_next_claim_in": "Next claim in",
+    "bonus_no_info": "No bonus information available.",
+    "bonus_toast_success_title": "Bonus Claimed!",
+    "bonus_toast_success_desc": "You've received {amount} CENT. Your new streak is {streak} days!",
+    "bonus_toast_error_title": "Error Claiming Bonus",
+    "bonus_error_status": "Could not retrieve daily bonus status.",
+    "bonus_error_unexpected_status": "An unexpected error occurred while fetching bonus status.",
+    "bonus_error_claim_failed": "Failed to claim bonus.",
+    "bonus_error_unexpected_claim": "An unexpected error occurred."
 }

@@ -38,13 +38,17 @@ export function Header() {
   return (
     <header className="py-4 px-4 md:px-8 border-b mb-8">
       <div className="container mx-auto flex justify-between items-center">
+        {/* --- Left Side --- */}
         <div className="flex items-center gap-6">
+          {/* Logo and App Name (visible on all screen sizes) */}
           <Link href="/" className="flex items-center gap-3">
             <LibertyCentLogo />
             <h1 className="text-2xl font-bold text-foreground">
               LibertyCent
             </h1>
           </Link>
+          
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-primary">
@@ -53,6 +57,8 @@ export function Header() {
             ))}
           </nav>
         </div>
+
+        {/* --- Right Side (Desktop) --- */}
         <div className="hidden md:flex items-center gap-4">
           <LanguageSwitcher />
           {loading ? null : user ? (
@@ -64,8 +70,10 @@ export function Header() {
             </div>
           )}
         </div>
+
+        {/* --- Right Side (Mobile) --- */}
         <div className="md:hidden flex items-center gap-2">
-           <LanguageSwitcher />
+          <LanguageSwitcher />
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">

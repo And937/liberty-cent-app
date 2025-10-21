@@ -86,15 +86,19 @@ export default function AccountPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-            <Card>
+             <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10 text-center">
                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <Mail className="h-5 w-5 text-muted-foreground"/>
-                        <span>{t('account_email')}</span>
+                    <div className="flex justify-center items-center mb-2">
+                        <div className="p-3 bg-primary/10 rounded-full">
+                            <Mail className="h-8 w-8 text-primary" />
+                        </div>
+                    </div>
+                    <CardTitle className="text-xl">
+                        {t('account_email')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-lg font-medium text-foreground break-all">{user.email}</p>
+                    <p className="text-base font-medium text-foreground break-all">{user.email}</p>
                 </CardContent>
             </Card>
 

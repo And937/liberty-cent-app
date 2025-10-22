@@ -13,4 +13,6 @@ const nextConfig = {
   },
 };
 
+// Force new deployment to clear Vercel cache for custom domain.
+
 module.exports = nextConfig;

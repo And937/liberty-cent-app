@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   /* config options here */
   images: {
     remotePatterns: [
@@ -12,7 +13,5 @@ const nextConfig = {
     ],
   },
 };
-
-// Force new deployment to clear Vercel cache for custom domain.
 
 module.exports = nextConfig;

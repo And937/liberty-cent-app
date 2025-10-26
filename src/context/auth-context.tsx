@@ -47,25 +47,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    const interval = setInterval(async () => {
-        if (firebaseAuth.currentUser) {
-            await firebaseAuth.currentUser.reload();
-            // Check if the user object reference has changed to avoid unnecessary state updates
-            if (firebaseAuth.currentUser !== user) {
-              setUser(firebaseAuth.currentUser);
-            }
+    // This listener handles the case where the user verifies their email in a different tab
+    const idTokenListener = firebaseAuth.onIdTokenChanged(async (user) => {
+        if (user) {
+            setUser(user);
             try {
-                const token = await firebaseAuth.currentUser.getIdToken(true);
+                const token = await user.getIdToken(true);
                 setIdToken(token);
             } catch (error) {
                 console.error("Error refreshing token:", error);
                 await signOut(firebaseAuth);
             }
         }
-    }, 10 * 60 * 1000);
+    });
+
+    const interval = setInterval(async () => {
+        if (firebaseAuth.currentUser) {
+            await firebaseAuth.currentUser.reload();
+            const reloadedUser = firebaseAuth.currentUser;
+            // Only update state if verification status has changed
+            if (reloadedUser && user && reloadedUser.emailVerified !== user.emailVerified) {
+              setUser(reloadedUser);
+            }
+        }
+    }, 5 * 1000); // Check every 5 seconds
 
     return () => {
         unsubscribe();
+        idTokenListener();
         clearInterval(interval);
     };
   }, [user]);
@@ -81,7 +90,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (email: string, pass: string) => {
     const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, pass);
-    await sendVerificationEmail(userCredential.user);
     // We keep the user logged in but unverified.
     return userCredential;
   };
@@ -114,5 +122,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-    

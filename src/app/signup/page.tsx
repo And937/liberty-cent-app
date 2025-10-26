@@ -21,7 +21,7 @@ function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
 
-  const { signup, user, loading: authLoading } = useAuth();
+  const { signup, user, loading: authLoading, sendVerificationEmail } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -37,7 +37,7 @@ function SignupForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user?.emailVerified) {
       router.push('/account');
     }
   }, [user, authLoading, router]);
@@ -49,6 +49,8 @@ function SignupForm() {
       const userCredential = await signup(email, password);
       
       const idToken = await userCredential.user.getIdToken();
+
+      await sendVerificationEmail(userCredential.user);
 
       const result = await createUser({
         uid: userCredential.user.uid,
@@ -64,9 +66,10 @@ function SignupForm() {
           title: t('signup_toast_partial_title'),
           description: t('signup_toast_partial_desc')
         });
-      } else {
-         setSignupSuccess(true);
       }
+      
+      setSignupSuccess(true);
+      
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -75,6 +78,22 @@ function SignupForm() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      await sendVerificationEmail();
+      toast({
+        title: t('verify_email_sent_title'),
+        description: t('verify_email_sent_desc'),
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: t('verify_email_error_title'),
+        description: error.message || t('verify_email_error_desc'),
+      });
     }
   };
 
@@ -87,7 +106,15 @@ function SignupForm() {
   }
   
   if (user && !signupSuccess) {
-     router.push('/account');
+     if(user.emailVerified) {
+       router.push('/account');
+     }
+     // If user exists but is not verified, they might have refreshed the success page.
+     // Show them the success page again.
+     if (!signupSuccess) {
+       setSignupSuccess(true);
+       setEmail(user.email || '');
+     }
      return (
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -113,9 +140,12 @@ function SignupForm() {
             <p className="text-muted-foreground">
               {t('signup_success_message', { email: email })}
             </p>
-            <Button asChild>
-                <Link href="/login">{t('signup_success_button')}</Link>
-            </Button>
+            <div className="space-y-2">
+                <Button onClick={handleResendVerification}>{t('verify_email_resend_button')}</Button>
+                 <Button asChild variant="default">
+                    <Link href="/login">{t('signup_success_button')}</Link>
+                </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import {
   onAuthStateChanged,
   User,
@@ -29,37 +29,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [idToken, setIdToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
-      setLoading(true);
-      if (currentUser) {
-          await currentUser.reload(); // Always reload to get latest emailVerified status
+  
+  const handleUser = useCallback(async (rawUser: User | null) => {
+      if (rawUser) {
+          // Always reload to get the latest user state from Firebase servers
+          await rawUser.reload();
+          // After reloading, get the fresh user object
           const freshUser = firebaseAuth.currentUser;
           setUser(freshUser);
 
-          if (freshUser) {
+          if (freshUser && freshUser.emailVerified) {
               try {
-                  const token = await freshUser.getIdToken(true); // Force refresh token
+                  // Force refresh the token to get latest claims
+                  const token = await freshUser.getIdToken(true);
                   setIdToken(token);
               } catch (error) {
                   console.error("Error getting ID token:", error);
                   setIdToken(null);
                   await signOut(firebaseAuth); // Sign out on token error
               }
+          } else {
+              // User is not verified or is null, clear token
+              setIdToken(null);
           }
       } else {
           setUser(null);
           setIdToken(null);
       }
       setLoading(false);
-    });
-
-    return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, handleUser);
+    return () => unsubscribe();
+  }, [handleUser]);
+
   const sendVerificationEmail = async (userParam?: User | null) => {
-    const targetUser = userParam || user;
+    const targetUser = userParam || firebaseAuth.currentUser;
     if (targetUser) {
       await sendEmailVerification(targetUser);
     } else {
@@ -69,11 +75,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (email: string, pass: string) => {
     const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, pass);
+    // The onAuthStateChanged listener will handle the user state
     return userCredential;
   };
 
-  const login = (email: string, pass: string) => {
-    return signInWithEmailAndPassword(firebaseAuth, email, pass);
+  const login = async (email: string, pass: string) => {
+    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, pass);
+    // Manually trigger a state update after login to ensure freshness
+    await handleUser(userCredential.user);
+    return userCredential;
   };
 
   const logout = () => {
@@ -90,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     sendVerificationEmail,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

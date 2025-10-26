@@ -146,7 +146,7 @@ function SignupForm() {
                         <Link href="/login">{t('signup_success_button')}</Link>
                     </Button>
                 </div>
-                 <Button onClick={handleResendVerification} disabled={isResending} variant="outline" className="w-full">
+                 <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="w-full h-auto p-0 text-muted-foreground">
                     {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {t('verify_email_resend_button')}
                 </Button>

@@ -15,7 +15,7 @@ import { useLanguage } from "@/context/language-context";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function AccountPage() {
-  const { user, loading: authLoading, idToken, sendVerificationEmail } = useAuth();
+  const { user, loading: authLoading, idToken, sendVerificationEmail, logout } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -44,9 +44,14 @@ export default function AccountPage() {
             setReferralCode(result.referralCode ?? null);
           } else {
             setError(result.error ?? t('account_error_data'));
+            toast({
+              variant: "destructive",
+              title: t('toast_error_title'),
+              description: result.error,
+            })
             setBalance(0);
           }
-        } catch (e) {
+        } catch (e: any) {
           setError(t('account_error_unexpected'));
           setBalance(0);
         } finally {
@@ -60,7 +65,7 @@ export default function AccountPage() {
     if (!authLoading && user) {
       fetchAccountData();
     }
-  }, [user, authLoading, idToken, t]);
+  }, [user, authLoading, idToken, t, toast]);
   
   const handleResendVerification = async () => {
     setIsSendingVerification(true);
@@ -117,10 +122,13 @@ export default function AccountPage() {
               <p className="text-muted-foreground">
                 {t('verify_email_message', { email: user.email! })}
               </p>
-              <Button onClick={handleResendVerification} disabled={isSendingVerification}>
-                {isSendingVerification ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                {t('verify_email_resend_button')}
-              </Button>
+              <div className="flex flex-col items-center gap-4">
+                <Button onClick={handleResendVerification} disabled={isSendingVerification}>
+                    {isSendingVerification ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {t('verify_email_resend_button')}
+                </Button>
+                <Button onClick={logout} variant="link">{t('logout')}</Button>
+              </div>
             </CardContent>
           </Card>
         </div>

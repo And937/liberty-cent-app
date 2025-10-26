@@ -18,63 +18,40 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showVerificationAlert, setShowVerificationAlert] = useState(false);
-  const [isSendingVerification, setIsSendingVerification] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { login, user, loading: authLoading, sendVerificationEmail } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
   const { t } = useLanguage();
 
   useEffect(() => {
-    if (!authLoading && user?.emailVerified) {
+    if (!authLoading && user) {
       router.push('/account');
-    } else if (!authLoading && user && !user.emailVerified) {
-        setShowVerificationAlert(true);
     }
   }, [user, authLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setShowVerificationAlert(false);
+    setError(null);
     try {
-      const userCredential = await login(email, password);
-      // Let the useEffect handle the redirect for verified users
-      if (!userCredential.user.emailVerified) {
-        setShowVerificationAlert(true);
-      }
+      await login(email, password);
+      // The useEffect will handle the redirect on successful login
+      router.push('/account');
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: t('login_toast_failed_title'),
-        description: error.message || t('login_toast_failed_desc'),
-      });
+       let errorMessage = error.message;
+        if (error.code === 'auth/invalid-credential') {
+            errorMessage = t('login_toast_failed_desc');
+        } else if (error.message.includes("auth/user-not-found")) {
+            errorMessage = t('login_toast_failed_desc');
+        }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
   
-  const handleResendVerification = async () => {
-    setIsSendingVerification(true);
-    try {
-      await sendVerificationEmail();
-      toast({
-        title: t('verify_email_sent_title'),
-        description: t('verify_email_sent_desc'),
-      });
-    } catch (error: any) {
-       toast({
-        variant: "destructive",
-        title: t('verify_email_error_title'),
-        description: error.message || t('verify_email_error_desc'),
-      });
-    } finally {
-      setIsSendingVerification(false);
-    }
-  };
-  
-  if (authLoading || (user && user.emailVerified)) {
+  if (authLoading || user) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -90,16 +67,12 @@ export default function LoginPage() {
           <CardDescription>{t('login_description')}</CardDescription>
         </CardHeader>
         <CardContent>
-          {showVerificationAlert && (
+          {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>{t('verify_email_alert_title')}</AlertTitle>
+              <AlertTitle>{t('login_toast_failed_title')}</AlertTitle>
               <AlertDescription>
-                {t('verify_email_alert_desc')}
-                <Button variant="link" className="p-0 h-auto ml-1 text-destructive-foreground" onClick={handleResendVerification} disabled={isSendingVerification}>
-                  {isSendingVerification ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                  {t('verify_email_resend_button')}
-                </Button>
+                {error}
               </AlertDescription>
             </Alert>
           )}

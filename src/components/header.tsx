@@ -27,6 +27,7 @@ export function Header() {
   const navLinks = [
     { href: "/", label: t('nav_trade') },
     { href: "/account", label: t('nav_account') },
+    { href: "/verify", label: t('nav_verify') },
     { href: "/info", label: t('nav_info') },
     { href: "/support", label: t('nav_support') },
   ];

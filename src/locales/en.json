@@ -4,6 +4,7 @@
     "nav_info": "Info",
     "nav_account": "Personal Account",
     "nav_support": "Support",
+    "nav_verify": "Verification",
     "login": "Login",
     "logout": "Logout",
     "signup": "Sign Up",
@@ -12,6 +13,11 @@
     "back": "Back",
     "i_paid": "I Paid",
     "day": "Day",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "pending": "Pending",
+    "rejected": "Rejected",
+    "go_to_verification": "Go to Verification",
 
     "trade_card_title": "Buy CENT",
     "trade_card_description": "Instantly buy CENT tokens.",
@@ -20,6 +26,7 @@
     "trade_card_cost": "Cost:",
     "trade_card_buy_button": "Buy CENT",
     "trade_card_equivalents": "Equivalent in other currencies",
+    "trade_card_verification_required_desc": "To buy tokens, you need to verify your account.",
 
     "info_vision_title": "Our Vision — Strength in Unity",
     "info_vision_p1": "LibertyCent is more than just a token. It's a movement towards creating a decentralized financial ecosystem accessible to everyone. We believe the future of finance is in transparent, fast, and fair technology.",
@@ -94,6 +101,8 @@
 
     "toast_invalid_amount_title": "Invalid Amount",
     "toast_invalid_amount_desc": "Please enter a valid amount to transact.",
+    "toast_verification_required_title": "Verification Required",
+    "toast_verification_required_desc": "You must verify your account to perform this action.",
     "toast_payment_success_title": "Transaction Under Review",
     "toast_payment_success_desc": "Your transaction is being processed. The tokens will be credited to your account after verification.",
     "toast_error_title": "Error",
@@ -119,7 +128,8 @@
     "support_toast_description": "Copied to clipboard.",
 
     "account_title": "Personal Account",
-    "account_description": "This is your personal account page. You can view your current balance here.",
+    "account_description": "This is your personal account page. You can view your current balance and status here.",
+    "account_verification_title": "Verification Status",
     "account_email": "Account Email",
     "account_referral_title": "Your Referral Info",
     "account_referral_code_label": "Your Referral Code",
@@ -191,5 +201,27 @@
     "verify_email_error_title": "Error Sending Email",
     "verify_email_error_desc": "An unexpected error occurred.",
     "verify_email_alert_title": "Email Not Verified",
-    "verify_email_alert_desc": "You must verify your email address before you can log in. Check your inbox for a verification link."
+    "verify_email_alert_desc": "You must verify your email address before you can log in. Check your inbox for a verification link.",
+
+    "verification_status_verified": "Account Verified",
+    "verification_status_verified_desc": "Your account is verified and all features are unlocked.",
+    "verification_status_verified_desc_full": "Your identity has been successfully verified. You now have full access to all platform features, including token purchases.",
+    "verification_status_pending": "Verification Pending",
+    "verification_status_pending_desc": "Your documents are under review.",
+    "verification_status_pending_desc_full": "Your documents have been submitted and are currently under review. This process usually takes 1-2 business days. We will notify you of the result.",
+    "verification_status_rejected": "Verification Rejected",
+    "verification_status_rejected_desc": "Please resubmit your documents.",
+    "verification_status_rejected_desc_full": "Your verification request was rejected. Please review the requirements and submit your documents again.",
+    "verification_status_unverified": "Not Verified",
+    "verification_status_unverified_desc": "Verify your account to buy tokens.",
+
+    "verification_form_title": "Upload Your Documents",
+    "verification_form_desc": "Please provide clear photos of your government-issued ID (Passport or Driver's License).",
+    "verification_file_front": "Document (Front Side)",
+    "verification_file_back": "Document (Back Side, if applicable)",
+    "verification_button_submit": "Submit for Verification",
+    "verification_toast_no_front_title": "Front side required",
+    "verification_toast_no_front_desc": "Please upload an image of the front side of your document.",
+    "verification_toast_success_title": "Documents Submitted",
+    "verification_toast_success_desc": "Your documents are now under review."
 }

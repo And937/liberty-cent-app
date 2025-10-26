@@ -71,6 +71,7 @@ export async function createUser(data: { uid: string; email: string, idToken: st
       createdAt: FieldValue.serverTimestamp(),
       lastBonusClaim: null,
       loginStreak: 0,
+      verificationStatus: 'unverified',
     }, { merge: true });
 
     return { success: true };
@@ -80,7 +81,13 @@ export async function createUser(data: { uid: string; email: string, idToken: st
   }
 }
 
-export async function getUserBalance(data: { idToken: string }): Promise<{ success: boolean; balance?: number; referralCode?: string; error?: string }> {
+export async function getUserBalance(data: { idToken: string }): Promise<{ 
+    success: boolean; 
+    balance?: number; 
+    referralCode?: string; 
+    verificationStatus?: string;
+    error?: string 
+}> {
   try {
     const decodedToken = await verifyToken(data.idToken);
     const userId = decodedToken.uid;
@@ -94,6 +101,7 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
     
     let userData = docSnap.data();
     let referralCode = userData?.referralCode;
+    let verificationStatus = userData?.verificationStatus || 'unverified';
 
     // If the user document exists but is missing a referral code, generate and save one.
     if (docSnap.exists && !referralCode) {
@@ -113,14 +121,15 @@ export async function getUserBalance(data: { idToken: string }): Promise<{ succe
         createdAt: FieldValue.serverTimestamp(),
         lastBonusClaim: null,
         loginStreak: 0,
+        verificationStatus: 'unverified',
       });
-      return { success: true, balance: 0, referralCode: newReferralCode };
+      return { success: true, balance: 0, referralCode: newReferralCode, verificationStatus: 'unverified' };
     }
 
     // Safely access balance, default to 0 if it doesn't exist.
     const balance = userData?.balance ?? 0;
 
-    return { success: true, balance, referralCode };
+    return { success: true, balance, referralCode, verificationStatus };
   } catch (error: any) {
     console.error("Error getting user balance:", error.message);
     // The error from verifyToken is already descriptive.
@@ -143,6 +152,13 @@ export async function logTransaction(data: {
 
     if (!adminDb) {
       throw new Error('Firestore is not initialized.');
+    }
+    
+    // Check verification status
+    const userRef = adminDb.collection('users').doc(uid);
+    const userDoc = await userRef.get();
+    if (!userDoc.exists || userDoc.data()?.verificationStatus !== 'verified') {
+        throw new Error("User must be verified to make a transaction.");
     }
 
     const transactionRef = adminDb.collection('transactions').doc();

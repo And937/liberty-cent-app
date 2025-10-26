@@ -4,6 +4,7 @@
     "nav_info": "Инфо",
     "nav_account": "Личный кабинет",
     "nav_support": "Поддержка",
+    "nav_verify": "Верификация",
     "login": "Войти",
     "logout": "Выйти",
     "signup": "Регистрация",
@@ -12,6 +13,11 @@
     "back": "Назад",
     "i_paid": "Я оплатил",
     "day": "День",
+    "verified": "Верифицирован",
+    "unverified": "Не верифицирован",
+    "pending": "На проверке",
+    "rejected": "Отклонено",
+    "go_to_verification": "Перейти к верификации",
 
     "trade_card_title": "Купить CENT",
     "trade_card_description": "Мгновенно покупайте токены CENT.",
@@ -20,6 +26,7 @@
     "trade_card_cost": "Стоимость:",
     "trade_card_buy_button": "Купить CENT",
     "trade_card_equivalents": "Эквивалент в других валютах",
+    "trade_card_verification_required_desc": "Для покупки токенов вам необходимо верифицировать свой аккаунт.",
 
     "info_vision_title": "Наше видение — Сила в единстве",
     "info_vision_p1": "LibertyCent — это больше, чем просто токен. Это движение к созданию децентрализованной финансовой экосистемы, доступной для всех. Мы верим, что будущее финансов за прозрачными, быстрыми и справедливыми технологиями.",
@@ -94,6 +101,8 @@
 
     "toast_invalid_amount_title": "Неверная сумма",
     "toast_invalid_amount_desc": "Пожалуйста, введите корректную сумму для транзакции.",
+    "toast_verification_required_title": "Требуется верификация",
+    "toast_verification_required_desc": "Вы должны верифицировать свой аккаунт, чтобы выполнить это действие.",
     "toast_payment_success_title": "Транзакция на проверке",
     "toast_payment_success_desc": "Ваша транзакция обрабатывается. Токены будут зачислены на ваш счет после проверки.",
     "toast_error_title": "Ошибка",
@@ -119,7 +128,8 @@
     "support_toast_description": "Скопировано в буфер обмена.",
 
     "account_title": "Личный кабинет",
-    "account_description": "Это ваша личная страница аккаунта. Здесь вы можете просмотреть свой текущий баланс.",
+    "account_description": "Это ваша личная страница аккаунта. Здесь вы можете просмотреть свой текущий баланс и статус.",
+    "account_verification_title": "Статус верификации",
     "account_email": "Электронная почта аккаунта",
     "account_referral_title": "Ваша реферальная информация",
     "account_referral_code_label": "Ваш реферальный код",
@@ -191,5 +201,27 @@
     "verify_email_error_title": "Ошибка отправки письма",
     "verify_email_error_desc": "Произошла непредвиденная ошибка.",
     "verify_email_alert_title": "Электронная почта не подтверждена",
-    "verify_email_alert_desc": "Вы должны подтвердить свой адрес электронной почты, прежде чем сможете войти. Проверьте свой почтовый ящик на наличие ссылки для подтверждения."
+    "verify_email_alert_desc": "Вы должны подтвердить свой адрес электронной почты, прежде чем сможете войти. Проверьте свой почтовый ящик на наличие ссылки для подтверждения.",
+
+    "verification_status_verified": "Аккаунт верифицирован",
+    "verification_status_verified_desc": "Ваш аккаунт верифицирован, и все функции разблокированы.",
+    "verification_status_verified_desc_full": "Ваша личность успешно подтверждена. Теперь у вас есть полный доступ ко всем функциям платформы, включая покупку токенов.",
+    "verification_status_pending": "Верификация на проверке",
+    "verification_status_pending_desc": "Ваши документы находятся на рассмотрении.",
+    "verification_status_pending_desc_full": "Ваши документы были отправлены и в настоящее время находятся на рассмотрении. Этот процесс обычно занимает 1-2 рабочих дня. Мы сообщим вам о результате.",
+    "verification_status_rejected": "Верификация отклонена",
+    "verification_status_rejected_desc": "Пожалуйста, повторно отправьте ваши документы.",
+    "verification_status_rejected_desc_full": "Ваш запрос на верификацию был отклонен. Пожалуйста, ознакомьтесь с требованиями и отправьте документы снова.",
+    "verification_status_unverified": "Не верифицирован",
+    "verification_status_unverified_desc": "Верифицируйте аккаунт для покупки токенов.",
+
+    "verification_form_title": "Загрузите ваши документы",
+    "verification_form_desc": "Пожалуйста, предоставьте четкие фотографии вашего удостоверения личности (паспорт или водительское удостоверение).",
+    "verification_file_front": "Документ (Лицевая сторона)",
+    "verification_file_back": "Документ (Обратная сторона, если применимо)",
+    "verification_button_submit": "Отправить на проверку",
+    "verification_toast_no_front_title": "Требуется лицевая сторона",
+    "verification_toast_no_front_desc": "Пожалуйста, загрузите изображение лицевой стороны вашего документа.",
+    "verification_toast_success_title": "Документы отправлены",
+    "verification_toast_success_desc": "Ваши документы теперь находятся на рассмотрении."
 }

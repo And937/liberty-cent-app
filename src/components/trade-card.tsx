@@ -18,15 +18,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Copy, ChevronLeft, ChevronRight, Loader2, ShieldAlert } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
-import { logTransaction } from "@/app/actions";
+import { logTransaction, getUserBalance } from "@/app/actions";
 import { useLanguage } from "@/context/language-context";
+import Link from "next/link";
+import { Skeleton } from "./ui/skeleton";
 
 const CENT_PRICE_USD = 0.01;
 
@@ -79,7 +82,7 @@ type DialogStep = 'selection' | 'details';
 
 export function TradeCard() {
   const { toast } = useToast();
-  const { user, idToken } = useAuth();
+  const { user, idToken, loading: authLoading } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
 
@@ -91,6 +94,25 @@ export function TradeCard() {
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>([]);
   const [isLoadingRates, setIsLoadingRates] = useState(true);
   const [dialogStep, setDialogStep] = useState<DialogStep>('selection');
+
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const [isStatusLoading, setIsStatusLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStatus() {
+        if (user && idToken) {
+            setIsStatusLoading(true);
+            const result = await getUserBalance({ idToken }); // Re-using this as it returns status
+            if (result.success) {
+                setVerificationStatus(result.verificationStatus ?? 'unverified');
+            }
+            setIsStatusLoading(false);
+        } else if (!authLoading) {
+            setIsStatusLoading(false);
+        }
+    }
+    fetchStatus();
+  }, [user, idToken, authLoading]);
 
   const fetchRates = useCallback(async (isInitialLoad = false) => {
     if (isInitialLoad) {
@@ -136,6 +158,15 @@ export function TradeCard() {
   const handleBuyClick = () => {
     if (!user) {
         router.push('/login');
+        return;
+    }
+     if (verificationStatus !== 'verified') {
+        toast({
+            variant: "destructive",
+            title: t('toast_verification_required_title'),
+            description: t('toast_verification_required_desc'),
+        });
+        router.push('/verify');
         return;
     }
     if (parseFloat(buyAmount) > 0) {
@@ -286,6 +317,95 @@ export function TradeCard() {
     }
   };
 
+  const renderContent = () => {
+    if (authLoading || isStatusLoading) {
+      return (
+        <div className="space-y-4 pt-4">
+          <Skeleton className="h-6 w-1/3" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-12 w-full mt-4" />
+        </div>
+      );
+    }
+
+    if (!user) {
+         return (
+            <div className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <label htmlFor="buy-amount" className="text-sm font-medium">
+                  {t('trade_card_amount')}
+                </label>
+                <Input
+                  id="buy-amount"
+                  type="number"
+                  placeholder="0.00"
+                  value={buyAmount}
+                  onChange={(e) => setBuyAmount(e.target.value)}
+                  className="text-lg"
+                />
+              </div>
+              <Button size="lg" className="w-full text-lg mt-4" onClick={handleBuyClick}>
+                {t('trade_card_buy_button')}
+              </Button>
+            </div>
+        );
+    }
+
+    if (verificationStatus !== 'verified') {
+      return (
+        <Alert className="mt-4">
+            <ShieldAlert className="h-4 w-4" />
+            <AlertTitle>{t('toast_verification_required_title')}</AlertTitle>
+            <AlertDescription>
+                {t('trade_card_verification_required_desc')}
+                <Button asChild variant="link" className="p-0 h-auto mt-2">
+                    <Link href="/verify">{t('go_to_verification')}</Link>
+                </Button>
+            </AlertDescription>
+        </Alert>
+      );
+    }
+
+    return (
+        <div className="space-y-4 pt-4">
+          <div className="space-y-2">
+            <label htmlFor="buy-amount" className="text-sm font-medium">
+              {t('trade_card_amount')}
+            </label>
+            <Input
+              id="buy-amount"
+              type="number"
+              placeholder="0.00"
+              value={buyAmount}
+              onChange={(e) => setBuyAmount(e.target.value)}
+              className="text-lg"
+            />
+          </div>
+          
+          {usdCost > 0 && (
+            <div className="text-sm">
+              <p>
+                {t('trade_card_cost')}{" "}
+                <span className="font-bold text-foreground">
+                  ${usdCost.toFixed(2)}
+                </span>
+              </p>
+            </div>
+          )}
+            
+          <Button
+            size="lg"
+            className="w-full text-lg mt-4"
+            onClick={handleBuyClick}
+            disabled={isLoadingRates && paymentOptions.length === 0}
+          >
+            {isLoadingRates && paymentOptions.length === 0 ? <Loader2 className="animate-spin mr-2" /> : null}
+            {t('trade_card_buy_button')}
+          </Button>
+        </div>
+    );
+  }
+
   return (
     <>
       <Card className="shadow-lg">
@@ -307,44 +427,9 @@ export function TradeCard() {
           </div>
         </CardHeader>
         <CardContent>
-            <div className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <label htmlFor="buy-amount" className="text-sm font-medium">
-                  {t('trade_card_amount')}
-                </label>
-                <Input
-                  id="buy-amount"
-                  type="number"
-                  placeholder="0.00"
-                  value={buyAmount}
-                  onChange={(e) => setBuyAmount(e.target.value)}
-                  className="text-lg"
-                />
-              </div>
-              
-              {usdCost > 0 && (
-                <div className="text-sm">
-                  <p>
-                    {t('trade_card_cost')}{" "}
-                    <span className="font-bold text-foreground">
-                      ${usdCost.toFixed(2)}
-                    </span>
-                  </p>
-                </div>
-              )}
-                
-              <Button
-                size="lg"
-                className="w-full text-lg mt-4"
-                onClick={handleBuyClick}
-                disabled={isLoadingRates && paymentOptions.length === 0}
-              >
-                {isLoadingRates && paymentOptions.length === 0 ? <Loader2 className="animate-spin mr-2" /> : null}
-                {t('trade_card_buy_button')}
-              </Button>
-            </div>
+            {renderContent()}
         </CardContent>
-        {usdCost > 0 && (
+        {user && verificationStatus === 'verified' && usdCost > 0 && (
             <>
                 <Separator className="my-4"/>
                 <CardFooter className="flex-col items-start space-y-2">

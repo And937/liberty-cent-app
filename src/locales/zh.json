@@ -4,6 +4,7 @@
     "nav_info": "信息",
     "nav_account": "个人账户",
     "nav_support": "支持",
+    "nav_verify": "验证",
     "login": "登录",
     "logout": "登出",
     "signup": "注册",
@@ -12,6 +13,11 @@
     "back": "返回",
     "i_paid": "我已付款",
     "day": "天",
+    "verified": "已验证",
+    "unverified": "未验证",
+    "pending": "待处理",
+    "rejected": "已拒绝",
+    "go_to_verification": "前往验证",
 
     "trade_card_title": "购买 CENT",
     "trade_card_description": "立即购买 CENT 代币。",
@@ -20,6 +26,7 @@
     "trade_card_cost": "成本:",
     "trade_card_buy_button": "购买 CENT",
     "trade_card_equivalents": "等值的其他货币",
+    "trade_card_verification_required_desc": "要购买代币，您需要验证您的帐户。",
 
     "info_vision_title": "我们的愿景 — 团结就是力量",
     "info_vision_p1": "LibertyCent 不仅仅是一个代币。它是一场旨在创建一个每个人都可以访问的去中心化金融生态系统的运动。我们相信金融的未来在于透明、快速和公平的技术。",
@@ -94,6 +101,8 @@
 
     "toast_invalid_amount_title": "无效金额",
     "toast_invalid_amount_desc": "请输入有效的交易金额。",
+    "toast_verification_required_title": "需要验证",
+    "toast_verification_required_desc": "您必须验证您的帐户才能执行此操作。",
     "toast_payment_success_title": "交易审核中",
     "toast_payment_success_desc": "您的交易正在处理中。验证后，代币将记入您的帐户。",
     "toast_error_title": "错误",
@@ -119,7 +128,8 @@
     "support_toast_description": "已复制到剪贴板。",
 
     "account_title": "个人账户",
-    "account_description": "这是您的个人账户页面。您可以在此处查看当前余额。",
+    "account_description": "这是您的个人账户页面。您可以在此处查看当前余额和状态。",
+    "account_verification_title": "验证状态",
     "account_email": "账户电子邮件",
     "account_referral_title": "您的推荐信息",
     "account_referral_code_label": "您的推荐码",
@@ -191,5 +201,27 @@
     "verify_email_error_title": "发送邮件时出错",
     "verify_email_error_desc": "发生意外错误。",
     "verify_email_alert_title": "电子邮件未验证",
-    "verify_email_alert_desc": "您必须先验证您的电子邮件地址才能登录。请检查您的收件箱中是否有验证链接。"
+    "verify_email_alert_desc": "您必须先验证您的电子邮件地址才能登录。请检查您的收件箱中是否有验证链接。",
+
+    "verification_status_verified": "帐户已验证",
+    "verification_status_verified_desc": "您的帐户已通过验证，所有功能均已解锁。",
+    "verification_status_verified_desc_full": "您的身份已成功验证。您现在可以完全访问所有平台功能，包括购买代币。",
+    "verification_status_pending": "验证待定",
+    "verification_status_pending_desc": "您的文件正在审核中。",
+    "verification_status_pending_desc_full": "您的文件已提交，目前正在审核中。此过程通常需要1-2个工作日。我们会通知您结果。",
+    "verification_status_rejected": "验证被拒绝",
+    "verification_status_rejected_desc": "请重新提交您的文件。",
+    "verification_status_rejected_desc_full": "您的验证请求已被拒绝。请查看要求并重新提交您的文件。",
+    "verification_status_unverified": "未验证",
+    "verification_status_unverified_desc": "验证您的帐户以购买代币。",
+
+    "verification_form_title": "上传您的文件",
+    "verification_form_desc": "请提供您的政府颁发的身份证（护照或驾照）的清晰照片。",
+    "verification_file_front": "文件（正面）",
+    "verification_file_back": "文件（背面，如适用）",
+    "verification_button_submit": "提交以供验证",
+    "verification_toast_no_front_title": "需要正面",
+    "verification_toast_no_front_desc": "请上传您文件的正面图片。",
+    "verification_toast_success_title": "文件已提交",
+    "verification_toast_success_desc": "您的文件现在正在审核中。"
 }

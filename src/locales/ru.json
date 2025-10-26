@@ -18,6 +18,7 @@
     "pending": "На проверке",
     "rejected": "Отклонено",
     "go_to_verification": "Перейти к верификации",
+    "login_first_error": "Вы должны войти в систему, чтобы выполнить это действие.",
 
     "trade_card_title": "Купить CENT",
     "trade_card_description": "Мгновенно покупайте токены CENT.",
@@ -221,10 +222,16 @@
     "verification_form_title": "Загрузите ваши документы",
     "verification_form_desc": "Пожалуйста, предоставьте четкие фотографии вашего удостоверения личности (паспорт или водительское удостоверение).",
     "verification_file_front": "Документ (Лицевая сторона)",
-    "verification_file_back": "Документ (Обратная сторона, если применимо)",
     "verification_button_submit": "Отправить на проверку",
     "verification_toast_no_front_title": "Требуется лицевая сторона",
     "verification_toast_no_front_desc": "Пожалуйста, загрузите изображение лицевой стороны вашего документа.",
+    "verification_toast_file_size_title": "Файл слишком большой",
+    "verification_toast_file_size_desc": "Пожалуйста, загрузите файл размером менее 5 МБ.",
     "verification_toast_success_title": "Документы отправлены",
-    "verification_toast_success_desc": "Ваши документы теперь находятся на рассмотрении."
+    "verification_toast_success_desc": "Ваши документы теперь находятся на рассмотрении.",
+    "verification_upload_click": "Нажмите для загрузки",
+    "verification_upload_drag": "или перетащите",
+    "verification_upload_types": "PNG, JPG или PDF (МАКС. 5 МБ)",
+    "verification_submit_error": "Не удалось отправить запрос на верификацию.",
+    "verification_submit_error_unexpected": "Произошла непредвиденная ошибка при отправке верификации."
 }

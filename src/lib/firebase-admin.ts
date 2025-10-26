@@ -22,6 +22,7 @@ if (!admin.apps.length) {
     try {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+        storageBucket: "centswap.appspot.com",
     });
     } catch (error: any) {
     console.error('Firebase admin initialization error', error.stack);

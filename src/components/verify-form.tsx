@@ -3,15 +3,16 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
-import { getUserBalance } from "@/app/actions";
+import { getUserBalance, submitVerificationRequest } from "@/app/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ShieldCheck, ShieldAlert, ShieldQuestion, UploadCloud, File, X } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { useLanguage } from "@/context/language-context";
-import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { storage } from "@/lib/firebase-config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export function VerifyForm() {
   const { user, loading: authLoading, idToken } = useAuth();
@@ -67,12 +68,19 @@ export function VerifyForm() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+       if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          variant: "destructive",
+          title: t('verification_toast_file_size_title'),
+          description: t('verification_toast_file_size_desc'),
+        });
+        return;
+      }
       setDocFront(file);
     }
   };
 
   const handleSubmit = async () => {
-    // This is a placeholder for the actual submission logic
     if (!docFront) {
       toast({
         variant: "destructive",
@@ -81,21 +89,40 @@ export function VerifyForm() {
       });
       return;
     }
+    if (!user || !idToken) {
+        toast({ variant: "destructive", title: t('toast_error_title'), description: t('login_first_error') });
+        return;
+    }
     
     setIsSubmitting(true);
-    // In a real app, you would upload files to Firebase Storage here
-    // and then call a server action to create the verification request.
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // For now, we just simulate a success and update the status locally.
-    setStatus('pending');
-    toast({
-      title: t('verification_toast_success_title'),
-      description: t('verification_toast_success_desc'),
-    });
-    
-    setDocFront(null);
-    setIsSubmitting(false);
+    try {
+        const fileRef = ref(storage, `verificationDocs/${user.uid}/${docFront.name}`);
+        
+        await uploadBytes(fileRef, docFront);
+        const downloadURL = await getDownloadURL(fileRef);
+
+        const result = await submitVerificationRequest({ idToken, documentUrl: downloadURL });
+
+        if (result.success) {
+            setStatus('pending');
+            toast({
+                title: t('verification_toast_success_title'),
+                description: t('verification_toast_success_desc'),
+            });
+            setDocFront(null);
+        } else {
+            throw new Error(result.error || t('verification_submit_error'));
+        }
+
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: t('toast_error_title'),
+            description: error.message || t('verification_submit_error_unexpected'),
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
 
@@ -168,6 +195,7 @@ export function VerifyForm() {
 
 
 const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: string, file: File | null, setFile: (file: File | null) => void, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => {
+  const { t } = useLanguage();
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="text-sm font-medium">{label}</label>
@@ -183,8 +211,8 @@ const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: 
         <label htmlFor={id} className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-muted/50 transition-colors">
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
-            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-            <p className="text-xs text-muted-foreground">PNG, JPG or PDF (MAX. 5MB)</p>
+            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">{t('verification_upload_click')}</span> {t('verification_upload_drag')}</p>
+            <p className="text-xs text-muted-foreground">{t('verification_upload_types')}</p>
           </div>
           <input id={id} type="file" className="hidden" onChange={onChange} accept="image/png, image/jpeg, application/pdf" />
         </label>

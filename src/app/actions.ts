@@ -307,3 +307,34 @@ export async function claimDailyBonus(data: { idToken: string }): Promise<{
         return { success: false, error: error.message };
     }
 }
+
+export async function submitVerificationRequest(data: { idToken: string; documentUrl: string; }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const decodedToken = await verifyToken(data.idToken);
+    const { uid } = decodedToken;
+
+    if (!adminDb) {
+      throw new Error('Firestore is not initialized.');
+    }
+    
+    // Create a request in the verificationRequests collection
+    const requestRef = adminDb.collection('verificationRequests').doc();
+    await requestRef.set({
+      userId: uid,
+      documentUrl: data.documentUrl,
+      status: 'pending',
+      createdAt: FieldValue.serverTimestamp(),
+    });
+
+    // Update the user's status to pending
+    const userRef = adminDb.collection('users').doc(uid);
+    await userRef.update({
+        verificationStatus: 'pending'
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error submitting verification request:", error.message);
+    return { success: false, error: error.message };
+  }
+}

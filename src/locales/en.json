@@ -18,6 +18,7 @@
     "pending": "Pending",
     "rejected": "Rejected",
     "go_to_verification": "Go to Verification",
+    "login_first_error": "You must be logged in to perform this action.",
 
     "trade_card_title": "Buy CENT",
     "trade_card_description": "Instantly buy CENT tokens.",
@@ -221,10 +222,16 @@
     "verification_form_title": "Upload Your Documents",
     "verification_form_desc": "Please provide clear photos of your government-issued ID (Passport or Driver's License).",
     "verification_file_front": "Document (Front Side)",
-    "verification_file_back": "Document (Back Side, if applicable)",
     "verification_button_submit": "Submit for Verification",
     "verification_toast_no_front_title": "Front side required",
     "verification_toast_no_front_desc": "Please upload an image of the front side of your document.",
+    "verification_toast_file_size_title": "File Too Large",
+    "verification_toast_file_size_desc": "Please upload a file smaller than 5MB.",
     "verification_toast_success_title": "Documents Submitted",
-    "verification_toast_success_desc": "Your documents are now under review."
+    "verification_toast_success_desc": "Your documents are now under review.",
+    "verification_upload_click": "Click to upload",
+    "verification_upload_drag": "or drag and drop",
+    "verification_upload_types": "PNG, JPG or PDF (MAX. 5MB)",
+    "verification_submit_error": "Failed to submit verification request.",
+    "verification_submit_error_unexpected": "An unexpected error occurred while submitting your verification."
 }

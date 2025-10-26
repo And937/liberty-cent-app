@@ -18,6 +18,7 @@
     "pending": "待处理",
     "rejected": "已拒绝",
     "go_to_verification": "前往验证",
+    "login_first_error": "您必须登录才能执行此操作。",
 
     "trade_card_title": "购买 CENT",
     "trade_card_description": "立即购买 CENT 代币。",
@@ -221,10 +222,16 @@
     "verification_form_title": "上传您的文件",
     "verification_form_desc": "请提供您的政府颁发的身份证（护照或驾照）的清晰照片。",
     "verification_file_front": "文件（正面）",
-    "verification_file_back": "文件（背面，如适用）",
     "verification_button_submit": "提交以供验证",
     "verification_toast_no_front_title": "需要正面",
     "verification_toast_no_front_desc": "请上传您文件的正面图片。",
+    "verification_toast_file_size_title": "文件太大",
+    "verification_toast_file_size_desc": "请上传小于5MB的文件。",
     "verification_toast_success_title": "文件已提交",
-    "verification_toast_success_desc": "您的文件现在正在审核中。"
+    "verification_toast_success_desc": "您的文件现在正在审核中。",
+    "verification_upload_click": "点击上传",
+    "verification_upload_drag": "或拖放",
+    "verification_upload_types": "PNG, JPG 或 PDF (最大 5MB)",
+    "verification_submit_error": "提交验证请求失败。",
+    "verification_submit_error_unexpected": "提交验证时发生意外错误。"
 }

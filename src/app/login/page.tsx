@@ -29,6 +29,8 @@ export default function LoginPage() {
   useEffect(() => {
     if (!authLoading && user?.emailVerified) {
       router.push('/account');
+    } else if (!authLoading && user && !user.emailVerified) {
+        setShowVerificationAlert(true);
     }
   }, [user, authLoading, router]);
 
@@ -72,7 +74,7 @@ export default function LoginPage() {
     }
   };
   
-  if (authLoading || user?.emailVerified) {
+  if (authLoading || (user && user.emailVerified)) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -141,5 +143,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

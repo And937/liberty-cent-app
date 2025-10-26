@@ -32,52 +32,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
-      setUser(currentUser);
+      setLoading(true);
       if (currentUser) {
-        try {
-            const token = await currentUser.getIdToken();
-            setIdToken(token);
-        } catch (error) {
-            console.error("Error getting ID token:", error);
-            setIdToken(null);
-        }
+          await currentUser.reload(); // Always reload to get latest emailVerified status
+          const freshUser = firebaseAuth.currentUser;
+          setUser(freshUser);
+
+          if (freshUser) {
+              try {
+                  const token = await freshUser.getIdToken(true); // Force refresh token
+                  setIdToken(token);
+              } catch (error) {
+                  console.error("Error getting ID token:", error);
+                  setIdToken(null);
+                  await signOut(firebaseAuth); // Sign out on token error
+              }
+          }
       } else {
-        setIdToken(null);
+          setUser(null);
+          setIdToken(null);
       }
       setLoading(false);
     });
 
-    // This listener handles the case where the user verifies their email in a different tab
-    const idTokenListener = firebaseAuth.onIdTokenChanged(async (user) => {
-        if (user) {
-            setUser(user);
-            try {
-                const token = await user.getIdToken(true);
-                setIdToken(token);
-            } catch (error) {
-                console.error("Error refreshing token:", error);
-                await signOut(firebaseAuth);
-            }
-        }
-    });
-
-    const interval = setInterval(async () => {
-        if (firebaseAuth.currentUser) {
-            await firebaseAuth.currentUser.reload();
-            const reloadedUser = firebaseAuth.currentUser;
-            // Only update state if verification status has changed
-            if (reloadedUser && user && reloadedUser.emailVerified !== user.emailVerified) {
-              setUser(reloadedUser);
-            }
-        }
-    }, 5 * 1000); // Check every 5 seconds
-
-    return () => {
-        unsubscribe();
-        idTokenListener();
-        clearInterval(interval);
-    };
-  }, [user]);
+    return () => unsubscribe();
+  }, []);
 
   const sendVerificationEmail = async (userParam?: User | null) => {
     const targetUser = userParam || user;
@@ -90,7 +69,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signup = async (email: string, pass: string) => {
     const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, pass);
-    // We keep the user logged in but unverified.
     return userCredential;
   };
 

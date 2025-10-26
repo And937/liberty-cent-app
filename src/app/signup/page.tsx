@@ -139,17 +139,17 @@ function SignupForm() {
             <p className="text-muted-foreground">
               {t('signup_success_message', { email: email })}
             </p>
-            <div className="flex flex-col items-center gap-4">
-                <Button onClick={handleResendVerification} disabled={isResending} variant="outline" className="w-full">
-                    {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('verify_email_resend_button')}
-                </Button>
+             <div className="flex flex-col items-center gap-4">
                 <div className="w-full text-center space-y-2">
                     <p className="text-xs text-muted-foreground">{t('signup_success_login_instruction')}</p>
                     <Button asChild variant="default" className="w-full">
                         <Link href="/login">{t('signup_success_button')}</Link>
                     </Button>
                 </div>
+                 <Button onClick={handleResendVerification} disabled={isResending} variant="outline" className="w-full">
+                    {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t('verify_email_resend_button')}
+                </Button>
             </div>
           </CardContent>
         </Card>

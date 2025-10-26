@@ -142,8 +142,8 @@ function SignupForm() {
              <div className="flex flex-col items-center gap-4">
                 <div className="w-full text-center space-y-2">
                     <p className="text-xs text-muted-foreground">{t('signup_success_login_instruction')}</p>
-                    <Button asChild variant="default" className="w-full">
-                        <Link href="/login">{t('signup_success_button')}</Link>
+                    <Button onClick={() => router.push('/login')} variant="default" className="w-full">
+                        {t('signup_success_button')}
                     </Button>
                 </div>
                  <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="w-full h-auto p-0 text-muted-foreground">

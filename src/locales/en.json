@@ -162,6 +162,7 @@
     "signup_success_description": "Your account has been created successfully.",
     "signup_success_message": "We've sent a verification link to **{email}**. Please check your inbox and click the link to activate your account.",
     "signup_success_button": "Proceed to Login",
+    "signup_success_login_instruction": "After confirming your email, click the button below to log in.",
 
     "bonus_card_title": "Daily Login Bonus",
     "bonus_card_description": "Log in every day to increase your reward. Don't break the streak!",

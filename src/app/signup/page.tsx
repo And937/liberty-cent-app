@@ -20,6 +20,7 @@ function SignupForm() {
   const [referralCode, setReferralCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const { signup, user, loading: authLoading, sendVerificationEmail } = useAuth();
   const router = useRouter();
@@ -82,6 +83,7 @@ function SignupForm() {
   };
 
   const handleResendVerification = async () => {
+    setIsResending(true);
     try {
       await sendVerificationEmail();
       toast({
@@ -94,6 +96,8 @@ function SignupForm() {
         title: t('verify_email_error_title'),
         description: error.message || t('verify_email_error_desc'),
       });
+    } finally {
+        setIsResending(false);
     }
   };
 
@@ -105,16 +109,11 @@ function SignupForm() {
     );
   }
   
-  if (user && !signupSuccess) {
-     if(user.emailVerified) {
-       router.push('/account');
-     }
+  if (user && !user.emailVerified && !signupSuccess) {
      // If user exists but is not verified, they might have refreshed the success page.
      // Show them the success page again.
-     if (!signupSuccess) {
-       setSignupSuccess(true);
-       setEmail(user.email || '');
-     }
+     setSignupSuccess(true);
+     setEmail(user.email || '');
      return (
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -140,11 +139,17 @@ function SignupForm() {
             <p className="text-muted-foreground">
               {t('signup_success_message', { email: email })}
             </p>
-            <div className="space-y-2">
-                <Button onClick={handleResendVerification}>{t('verify_email_resend_button')}</Button>
-                 <Button asChild variant="default">
-                    <Link href="/login">{t('signup_success_button')}</Link>
+            <div className="flex flex-col items-center gap-4">
+                <Button onClick={handleResendVerification} disabled={isResending} variant="outline" className="w-full">
+                    {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t('verify_email_resend_button')}
                 </Button>
+                <div className="w-full text-center space-y-2">
+                    <p className="text-xs text-muted-foreground">{t('signup_success_login_instruction')}</p>
+                    <Button asChild variant="default" className="w-full">
+                        <Link href="/login">{t('signup_success_button')}</Link>
+                    </Button>
+                </div>
             </div>
           </CardContent>
         </Card>

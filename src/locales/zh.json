@@ -162,6 +162,7 @@
     "signup_success_description": "您的帐户已成功创建。",
     "signup_success_message": "我们已向 **{email}** 发送了验证链接。请检查您的收件箱并单击链接以激活您的帐户。",
     "signup_success_button": "继续登录",
+    "signup_success_login_instruction": "确认电子邮件后，点击下面的按钮登录。",
 
     "bonus_card_title": "每日登录奖励",
     "bonus_card_description": "每天登录以增加您的奖励。不要中断连胜！",

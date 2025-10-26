@@ -32,24 +32,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   const handleUser = useCallback(async (rawUser: User | null) => {
       if (rawUser) {
-          // Always reload to get the latest user state from Firebase servers
+          // It's important to get the latest state of the user object
           await rawUser.reload();
-          // After reloading, get the fresh user object
           const freshUser = firebaseAuth.currentUser;
           setUser(freshUser);
 
           if (freshUser && freshUser.emailVerified) {
               try {
-                  // Force refresh the token to get latest claims
                   const token = await freshUser.getIdToken(true);
                   setIdToken(token);
               } catch (error) {
                   console.error("Error getting ID token:", error);
                   setIdToken(null);
-                  await signOut(firebaseAuth); // Sign out on token error
+                  await signOut(firebaseAuth);
               }
           } else {
-              // User is not verified or is null, clear token
               setIdToken(null);
           }
       } else {
@@ -59,7 +56,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
   }, []);
 
+
   useEffect(() => {
+    // onAuthStateChanged is the primary listener for auth state.
+    // It handles initial load, signup, and logout.
     const unsubscribe = onAuthStateChanged(firebaseAuth, handleUser);
     return () => unsubscribe();
   }, [handleUser]);
@@ -74,19 +74,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (email: string, pass: string) => {
-    const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, pass);
-    // The onAuthStateChanged listener will handle the user state
-    return userCredential;
+    return createUserWithEmailAndPassword(firebaseAuth, email, pass);
   };
 
   const login = async (email: string, pass: string) => {
     const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, pass);
-    // Manually trigger a state update after login to ensure freshness
+    // After login, we MUST manually trigger a reload to get the fresh emailVerified status.
+    // The onAuthStateChanged listener might not be fast enough or might have a stale user object.
     await handleUser(userCredential.user);
     return userCredential;
   };
 
   const logout = () => {
+    // onAuthStateChanged will handle setting user to null.
     return signOut(firebaseAuth);
   };
 
@@ -100,6 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     sendVerificationEmail,
   };
 
+  // Render children only when loading is complete to avoid flicker
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };
 

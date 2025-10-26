@@ -67,14 +67,14 @@ export default function AccountPage() {
     try {
       await sendVerificationEmail();
       toast({
-        title: "Verification Email Sent",
-        description: "A new verification link has been sent to your email address.",
+        title: t('verify_email_sent_title'),
+        description: t('verify_email_sent_desc'),
       });
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error Sending Email",
-        description: error.message || "An unexpected error occurred.",
+        title: t('verify_email_error_title'),
+        description: error.message || t('verify_email_error_desc'),
       });
     } finally {
       setIsSendingVerification(false);
@@ -101,25 +101,25 @@ export default function AccountPage() {
     return (
        <div className="container mx-auto p-4 md:p-8">
         <div className="max-w-2xl mx-auto">
-          <Card className="shadow-lg">
+          <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10">
             <CardHeader className="text-center">
               <div className="flex justify-center items-center mb-4">
                   <div className="p-3 bg-primary/10 rounded-full">
                       <Mail className="h-10 w-10 text-primary" />
                   </div>
               </div>
-              <CardTitle className="text-2xl">Verify Your Email</CardTitle>
+              <CardTitle className="text-2xl">{t('verify_email_title')}</CardTitle>
               <CardDescription>
-                Your account has been created, but you need to verify your email address to continue.
+                {t('verify_email_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-muted-foreground">
-                A verification link has been sent to <strong className="text-foreground">{user.email}</strong>. Please check your inbox (and spam folder) to activate your account.
+                {t('verify_email_message', { email: user.email! })}
               </p>
               <Button onClick={handleResendVerification} disabled={isSendingVerification}>
                 {isSendingVerification ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Resend Verification Email
+                {t('verify_email_resend_button')}
               </Button>
             </CardContent>
           </Card>
@@ -221,3 +221,5 @@ export default function AccountPage() {
     </div>
   );
 }
+
+  

@@ -47,13 +47,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    // Refresh token every 10 minutes to maintain session
     const interval = setInterval(async () => {
         if (firebaseAuth.currentUser) {
-            // Also refresh the user object to get the latest emailVerified status
             await firebaseAuth.currentUser.reload();
-            setUser(firebaseAuth.currentUser);
-
+            // Check if the user object reference has changed to avoid unnecessary state updates
+            if (firebaseAuth.currentUser !== user) {
+              setUser(firebaseAuth.currentUser);
+            }
             try {
                 const token = await firebaseAuth.currentUser.getIdToken(true);
                 setIdToken(token);
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         unsubscribe();
         clearInterval(interval);
     };
-  }, []);
+  }, [user]);
 
   const sendVerificationEmail = async (userParam?: User | null) => {
     const targetUser = userParam || user;
@@ -82,8 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signup = async (email: string, pass: string) => {
     const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, pass);
     await sendVerificationEmail(userCredential.user);
-    // Log out the user immediately after signup so they have to verify first.
-    await signOut(firebaseAuth);
+    // We keep the user logged in but unverified.
     return userCredential;
   };
 
@@ -115,3 +114,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+    

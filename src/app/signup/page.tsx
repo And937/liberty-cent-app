@@ -28,7 +28,6 @@ function SignupForm() {
   const { t } = useLanguage();
 
   useEffect(() => {
-    // Pre-fill referral code from URL query `?ref=...`
     if (searchParams) {
       const refCode = searchParams.get('ref');
       if (refCode) {
@@ -38,7 +37,6 @@ function SignupForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    // If auth is done loading and there IS a user, redirect them away from signup.
     if (!authLoading && user) {
       router.push('/account');
     }
@@ -49,11 +47,9 @@ function SignupForm() {
     setIsLoading(true);
     try {
       const userCredential = await signup(email, password);
-      // The sendVerificationEmail is now handled in the auth context signup function.
       
       const idToken = await userCredential.user.getIdToken();
 
-      // Call the server action to create the user document in Firestore
       const result = await createUser({
         uid: userCredential.user.uid,
         email: userCredential.user.email!,
@@ -82,13 +78,23 @@ function SignupForm() {
     }
   };
 
-  if (authLoading || user) {
+  if (authLoading) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
       </div>
     );
   }
+  
+  if (user && !signupSuccess) {
+     router.push('/account');
+     return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+      );
+  }
+
 
   if (signupSuccess) {
     return (
@@ -181,5 +187,3 @@ export default function SignupPage() {
     </Suspense>
   );
 }
-
-   

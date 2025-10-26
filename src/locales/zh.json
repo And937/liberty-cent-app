@@ -179,7 +179,16 @@
     "bonus_error_status": "无法检索每日奖励状态。",
     "bonus_error_unexpected_status": "获取奖励状态时发生意外错误。",
     "bonus_error_claim_failed": "领取奖励失败。",
-    "bonus_error_unexpected_claim": "发生意外错误。"
-}
+    "bonus_error_unexpected_claim": "发生意外错误。",
 
-   
+    "verify_email_title": "验证您的电子邮件",
+    "verify_email_description": "您的帐户已创建，但您需要验证您的电子邮件地址才能继续。",
+    "verify_email_message": "验证链接已发送至 **{email}**。请检查您的收件箱（和垃圾邮件文件夹）以激活您的帐户。",
+    "verify_email_resend_button": "重新发送验证邮件",
+    "verify_email_sent_title": "验证邮件已发送",
+    "verify_email_sent_desc": "新的验证链接已发送到您的电子邮件地址。",
+    "verify_email_error_title": "发送邮件时出错",
+    "verify_email_error_desc": "发生意外错误。",
+    "verify_email_alert_title": "电子邮件未验证",
+    "verify_email_alert_desc": "您必须先验证您的电子邮件地址才能登录。请检查您的收件箱中是否有验证链接。"
+}

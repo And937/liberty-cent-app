@@ -179,7 +179,16 @@
     "bonus_error_status": "Could not retrieve daily bonus status.",
     "bonus_error_unexpected_status": "An unexpected error occurred while fetching bonus status.",
     "bonus_error_claim_failed": "Failed to claim bonus.",
-    "bonus_error_unexpected_claim": "An unexpected error occurred."
-}
-
+    "bonus_error_unexpected_claim": "An unexpected error occurred.",
     
+    "verify_email_title": "Verify Your Email",
+    "verify_email_description": "Your account has been created, but you need to verify your email address to continue.",
+    "verify_email_message": "A verification link has been sent to **{email}**. Please check your inbox (and spam folder) to activate your account.",
+    "verify_email_resend_button": "Resend Verification Email",
+    "verify_email_sent_title": "Verification Email Sent",
+    "verify_email_sent_desc": "A new verification link has been sent to your email address.",
+    "verify_email_error_title": "Error Sending Email",
+    "verify_email_error_desc": "An unexpected error occurred.",
+    "verify_email_alert_title": "Email Not Verified",
+    "verify_email_alert_desc": "You must verify your email address before you can log in. Check your inbox for a verification link."
+}

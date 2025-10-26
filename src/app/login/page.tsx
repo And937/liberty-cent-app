@@ -104,8 +104,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background -mt-16">
-      <Card className="w-full max-w-md shadow-2xl">
+    <div className="flex items-center justify-center min-h-screen bg-transparent -mt-16">
+      <Card className="w-full max-w-md shadow-2xl bg-card/50 backdrop-blur-lg border border-white/10">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">{t('login_title')}</CardTitle>
           <CardDescription>{t('login_description')}</CardDescription>

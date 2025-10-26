@@ -92,8 +92,8 @@ function SignupForm() {
 
   if (signupSuccess) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background -mt-16">
-        <Card className="w-full max-w-md shadow-2xl text-center">
+      <div className="flex items-center justify-center min-h-screen bg-transparent -mt-16">
+        <Card className="w-full max-w-md shadow-2xl text-center bg-card/50 backdrop-blur-lg border border-white/10">
            <CardHeader>
               <div className="flex justify-center items-center mb-4">
                   <div className="p-3 bg-primary/10 rounded-full">
@@ -117,8 +117,8 @@ function SignupForm() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background -mt-16">
-      <Card className="w-full max-w-md shadow-2xl">
+    <div className="flex items-center justify-center min-h-screen bg-transparent -mt-16">
+      <Card className="w-full max-w-md shadow-2xl bg-card/50 backdrop-blur-lg border border-white/10">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">{t('signup_title')}</CardTitle>
           <CardDescription>{t('signup_description')}</CardDescription>

@@ -156,10 +156,12 @@
     "signup_login_link": "登录",
     "signup_toast_partial_title": "部分注册成功",
     "signup_toast_partial_desc": "您的账户已创建，但我们无法设置您的个人资料。请联系支持人员。",
-    "signup_toast_success_title": "注册成功！",
-    "signup_toast_success_desc": "欢迎来到 LibertyCent。您将被重定向到您的账户。",
     "signup_toast_failed_title": "注册失败",
     "signup_toast_failed_desc": "注册过程中发生未知错误。",
+    "signup_success_title": "确认您的电子邮件",
+    "signup_success_description": "您的帐户已成功创建。",
+    "signup_success_message": "我们已向 **{email}** 发送了验证链接。请检查您的收件箱并单击链接以激活您的帐户。",
+    "signup_success_button": "继续登录",
 
     "bonus_card_title": "每日登录奖励",
     "bonus_card_description": "每天登录以增加您的奖励。不要中断连胜！",
@@ -179,3 +181,5 @@
     "bonus_error_claim_failed": "领取奖励失败。",
     "bonus_error_unexpected_claim": "发生意外错误。"
 }
+
+   

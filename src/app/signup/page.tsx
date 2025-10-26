@@ -100,15 +100,15 @@ function SignupForm() {
                       <Mail className="h-10 w-10 text-primary" />
                   </div>
               </div>
-            <CardTitle className="text-2xl">Confirm Your Email</CardTitle>
-            <CardDescription>Your account has been created successfully.</CardDescription>
+            <CardTitle className="text-2xl">{t('signup_success_title')}</CardTitle>
+            <CardDescription>{t('signup_success_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              We've sent a verification link to <strong className="text-foreground">{email}</strong>. Please check your inbox and click the link to activate your account.
+              {t('signup_success_message', { email: email })}
             </p>
             <Button asChild>
-                <Link href="/login">Proceed to Login</Link>
+                <Link href="/login">{t('signup_success_button')}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -181,3 +181,5 @@ export default function SignupPage() {
     </Suspense>
   );
 }
+
+   

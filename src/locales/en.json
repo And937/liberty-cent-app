@@ -156,10 +156,12 @@
     "signup_login_link": "Login",
     "signup_toast_partial_title": "Signup Partially Successful",
     "signup_toast_partial_desc": "Your account was created, but we couldn't set up your profile. Please contact support.",
-    "signup_toast_success_title": "Signup Successful!",
-    "signup_toast_success_desc": "Welcome to LibertyCent. You will be redirected to your account.",
     "signup_toast_failed_title": "Signup Failed",
     "signup_toast_failed_desc": "An unknown error occurred during signup.",
+    "signup_success_title": "Confirm Your Email",
+    "signup_success_description": "Your account has been created successfully.",
+    "signup_success_message": "We've sent a verification link to **{email}**. Please check your inbox and click the link to activate your account.",
+    "signup_success_button": "Proceed to Login",
 
     "bonus_card_title": "Daily Login Bonus",
     "bonus_card_description": "Log in every day to increase your reward. Don't break the streak!",
@@ -179,3 +181,5 @@
     "bonus_error_claim_failed": "Failed to claim bonus.",
     "bonus_error_unexpected_claim": "An unexpected error occurred."
 }
+
+    

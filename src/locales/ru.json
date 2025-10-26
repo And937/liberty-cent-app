@@ -156,10 +156,12 @@
     "signup_login_link": "Войти",
     "signup_toast_partial_title": "Регистрация частично успешна",
     "signup_toast_partial_desc": "Ваш аккаунт создан, но мы не смогли настроить ваш профиль. Пожалуйста, свяжитесь с поддержкой.",
-    "signup_toast_success_title": "Регистрация успешна!",
-    "signup_toast_success_desc": "Добро пожаловать в LibertyCent. Вы будете перенаправлены в свой аккаунт.",
     "signup_toast_failed_title": "Ошибка регистрации",
     "signup_toast_failed_desc": "Во время регистрации произошла неизвестная ошибка.",
+    "signup_success_title": "Подтвердите вашу почту",
+    "signup_success_description": "Ваш аккаунт был успешно создан.",
+    "signup_success_message": "Мы отправили ссылку для подтверждения на адрес **{email}**. Пожалуйста, проверьте ваш почтовый ящик и перейдите по ссылке, чтобы активировать аккаунт.",
+    "signup_success_button": "Перейти ко входу",
 
     "bonus_card_title": "Ежедневный бонус за вход",
     "bonus_card_description": "Заходите каждый день, чтобы увеличить награду. Не прерывайте серию!",
@@ -179,3 +181,5 @@
     "bonus_error_claim_failed": "Не удалось получить бонус.",
     "bonus_error_unexpected_claim": "Произошла непредвиденная ошибка."
 }
+
+   

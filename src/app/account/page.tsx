@@ -7,12 +7,11 @@ import { getUserBalance } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Mail, Copy, Gift, Link as LinkIcon, AlertCircle } from "lucide-react";
+import { Loader2, Mail, Copy, Gift, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
 import { useLanguage } from "@/context/language-context";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function AccountPage() {
   const { user, loading: authLoading, idToken, sendVerificationEmail, logout } = useAuth();
@@ -102,6 +101,7 @@ export default function AccountPage() {
     );
   }
 
+  // This check is now the single source of truth for showing the verification screen.
   if (!user.emailVerified) {
     return (
        <div className="container mx-auto p-4 md:p-8">

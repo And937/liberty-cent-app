@@ -17,24 +17,24 @@ const serviceAccount: any = {
   "universe_domain": "googleapis.com"
 };
 
-// Check if the required environment variables are set before initializing
+let adminInstance: admin.app.App | null = null;
+
 if (!admin.apps.length) {
     try {
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-        storageBucket: "centswap.appspot.com",
-    });
+        adminInstance = admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+            storageBucket: "centswap.appspot.com",
+        });
     } catch (error: any) {
-    console.error('Firebase admin initialization error', error.stack);
+        console.error('Firebase admin initialization error', error.stack);
     }
+} else {
+    adminInstance = admin.app();
 }
 
-
-export const adminDb = admin.apps.length ? admin.firestore() : null;
-export const adminAuth = admin.apps.length ? admin.auth() : null;
-
-// We check if admin is initialized before exporting. If not, we export null 
-// or an object that won't throw when its methods are accessed.
-const adminInstance = admin.apps.length ? admin : null;
+export const adminDb = adminInstance ? adminInstance.firestore() : null;
+export const adminAuth = adminInstance ? adminInstance.auth() : null;
 
 export default adminInstance;
+
+    

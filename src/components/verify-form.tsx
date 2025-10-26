@@ -115,6 +115,7 @@ export function VerifyForm() {
         }
 
     } catch (error: any) {
+        console.error("Verification submission error:", error);
         toast({
             variant: "destructive",
             title: t('toast_error_title'),
@@ -220,3 +221,5 @@ const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: 
     </div>
   );
 }
+
+  

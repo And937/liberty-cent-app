@@ -7,14 +7,15 @@ import { getUserBalance } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Mail, Copy, Gift, Link as LinkIcon } from "lucide-react";
+import { Loader2, Mail, Copy, Gift, Link as LinkIcon, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
 import { useLanguage } from "@/context/language-context";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function AccountPage() {
-  const { user, loading: authLoading, idToken } = useAuth();
+  const { user, loading: authLoading, idToken, sendVerificationEmail } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -23,6 +24,7 @@ export default function AccountPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [isBalanceLoading, setIsBalanceLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -32,7 +34,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     const fetchAccountData = async () => {
-      if (user && idToken) {
+      if (user && user.emailVerified && idToken) {
         setIsBalanceLoading(true);
         setError(null);
         try {
@@ -50,6 +52,8 @@ export default function AccountPage() {
         } finally {
           setIsBalanceLoading(false);
         }
+      } else if (user && !user.emailVerified) {
+        setIsBalanceLoading(false);
       }
     };
 
@@ -57,6 +61,25 @@ export default function AccountPage() {
       fetchAccountData();
     }
   }, [user, authLoading, idToken, t]);
+  
+  const handleResendVerification = async () => {
+    setIsSendingVerification(true);
+    try {
+      await sendVerificationEmail();
+      toast({
+        title: "Verification Email Sent",
+        description: "A new verification link has been sent to your email address.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error Sending Email",
+        description: error.message || "An unexpected error occurred.",
+      });
+    } finally {
+      setIsSendingVerification(false);
+    }
+  };
 
   const copyToClipboard = (text: string, subject: string) => {
     navigator.clipboard.writeText(text);
@@ -72,6 +95,37 @@ export default function AccountPage() {
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
       </div>
     );
+  }
+
+  if (!user.emailVerified) {
+    return (
+       <div className="container mx-auto p-4 md:p-8">
+        <div className="max-w-2xl mx-auto">
+          <Card className="shadow-lg">
+            <CardHeader className="text-center">
+              <div className="flex justify-center items-center mb-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                      <Mail className="h-10 w-10 text-primary" />
+                  </div>
+              </div>
+              <CardTitle className="text-2xl">Verify Your Email</CardTitle>
+              <CardDescription>
+                Your account has been created, but you need to verify your email address to continue.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                A verification link has been sent to <strong className="text-foreground">{user.email}</strong>. Please check your inbox (and spam folder) to activate your account.
+              </p>
+              <Button onClick={handleResendVerification} disabled={isSendingVerification}>
+                {isSendingVerification ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Resend Verification Email
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   const siteLink = "https://libertycent.com/";

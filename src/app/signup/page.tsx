@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 import { createUser } from "@/app/actions";
 import { useLanguage } from "@/context/language-context";
 
@@ -19,6 +19,8 @@ function SignupForm() {
   const [password, setPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+
   const { signup, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
@@ -47,6 +49,8 @@ function SignupForm() {
     setIsLoading(true);
     try {
       const userCredential = await signup(email, password);
+      // The sendVerificationEmail is now handled in the auth context signup function.
+      
       const idToken = await userCredential.user.getIdToken();
 
       // Call the server action to create the user document in Firestore
@@ -65,10 +69,7 @@ function SignupForm() {
           description: t('signup_toast_partial_desc')
         });
       } else {
-         toast({
-          title: t('signup_toast_success_title'),
-          description: t('signup_toast_success_desc')
-        });
+         setSignupSuccess(true);
       }
     } catch (error: any) {
       toast({
@@ -85,6 +86,32 @@ function SignupForm() {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (signupSuccess) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background -mt-16">
+        <Card className="w-full max-w-md shadow-2xl text-center">
+           <CardHeader>
+              <div className="flex justify-center items-center mb-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                      <Mail className="h-10 w-10 text-primary" />
+                  </div>
+              </div>
+            <CardTitle className="text-2xl">Confirm Your Email</CardTitle>
+            <CardDescription>Your account has been created successfully.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              We've sent a verification link to <strong className="text-foreground">{email}</strong>. Please check your inbox and click the link to activate your account.
+            </p>
+            <Button asChild>
+                <Link href="/login">Proceed to Login</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

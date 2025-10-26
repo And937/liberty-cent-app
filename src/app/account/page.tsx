@@ -23,16 +23,19 @@ export default function AccountPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [isBalanceLoading, setIsBalanceLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSendingVerification, setIsSendingVerification] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    // This is the main guard for this page.
+    // If auth is done loading and there's no user OR the user's email isn't verified,
+    // redirect them to the login page.
+    if (!authLoading && (!user || !user.emailVerified)) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
     const fetchAccountData = async () => {
+      // Only fetch data if we have a verified user and an idToken
       if (user && user.emailVerified && idToken) {
         setIsBalanceLoading(true);
         setError(null);
@@ -56,35 +59,14 @@ export default function AccountPage() {
         } finally {
           setIsBalanceLoading(false);
         }
-      } else if (user && !user.emailVerified) {
-        setIsBalanceLoading(false);
       }
     };
 
-    if (!authLoading && user) {
+    if (!authLoading && user && user.emailVerified) {
       fetchAccountData();
     }
   }, [user, authLoading, idToken, t, toast]);
   
-  const handleResendVerification = async () => {
-    setIsSendingVerification(true);
-    try {
-      await sendVerificationEmail();
-      toast({
-        title: t('verify_email_sent_title'),
-        description: t('verify_email_sent_desc'),
-      });
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: t('verify_email_error_title'),
-        description: error.message || t('verify_email_error_desc'),
-      });
-    } finally {
-      setIsSendingVerification(false);
-    }
-  };
-
   const copyToClipboard = (text: string, subject: string) => {
     navigator.clipboard.writeText(text);
     toast({
@@ -93,47 +75,14 @@ export default function AccountPage() {
     });
   };
 
-  if (authLoading || !user) {
+  // If we are still loading auth state, or if the user is not verified yet (and the redirect hasn't happened)
+  // show a loading spinner. This prevents showing the account page content to a non-verified user briefly.
+  if (authLoading || !user || !user.emailVerified) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
       </div>
     );
-  }
-
-  // This check is now the single source of truth for showing the verification screen.
-  if (!user.emailVerified) {
-    return (
-       <div className="container mx-auto p-4 md:p-8">
-        <div className="max-w-2xl mx-auto">
-          <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10">
-            <CardHeader className="text-center">
-              <div className="flex justify-center items-center mb-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                      <Mail className="h-10 w-10 text-primary" />
-                  </div>
-              </div>
-              <CardTitle className="text-2xl">{t('verify_email_title')}</CardTitle>
-              <CardDescription>
-                {t('verify_email_description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <p className="text-muted-foreground">
-                {t('verify_email_message', { email: user.email! })}
-              </p>
-              <div className="flex flex-col items-center gap-4">
-                <Button onClick={handleResendVerification} disabled={isSendingVerification}>
-                    {isSendingVerification ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {t('verify_email_resend_button')}
-                </Button>
-                <Button onClick={logout} variant="link">{t('logout')}</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
   }
 
   const siteLink = "https://libertycent.com/";

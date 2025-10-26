@@ -20,29 +20,56 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { login, user, loading: authLoading } = useAuth();
+  const { login, user, loading: authLoading, sendVerificationEmail } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
+  const { toast } = useToast();
+  const [isResending, setIsResending] = useState(false);
+
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && user.emailVerified) {
       router.push('/account');
     }
   }, [user, authLoading, router]);
+
+  const handleResendVerification = async () => {
+    setIsResending(true);
+    try {
+        await sendVerificationEmail();
+        toast({
+            title: t('verify_email_sent_title'),
+            description: t('verify_email_sent_desc'),
+        });
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: t('verify_email_error_title'),
+            description: error.message || t('verify_email_error_desc'),
+        });
+    } finally {
+        setIsResending(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      await login(email, password);
-      // The useEffect will handle the redirect on successful login
-      router.push('/account');
+      const userCredential = await login(email, password);
+      
+      // The auth context's useEffect will handle the redirect on successful, VERIFIED login.
+      // We check here for the unverified case.
+      if (userCredential.user && !userCredential.user.emailVerified) {
+        setError(t('verify_email_alert_desc'));
+      } else {
+        router.push('/account');
+      }
+
     } catch (error: any) {
        let errorMessage = error.message;
-        if (error.code === 'auth/invalid-credential') {
-            errorMessage = t('login_toast_failed_desc');
-        } else if (error.message.includes("auth/user-not-found")) {
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
             errorMessage = t('login_toast_failed_desc');
         }
       setError(errorMessage);
@@ -51,7 +78,7 @@ export default function LoginPage() {
     }
   };
   
-  if (authLoading || user) {
+  if (authLoading || (user && user.emailVerified)) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -73,6 +100,13 @@ export default function LoginPage() {
               <AlertTitle>{t('login_toast_failed_title')}</AlertTitle>
               <AlertDescription>
                 {error}
+                {/* Show resend button only for verification error */}
+                {error === t('verify_email_alert_desc') && (
+                  <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="p-0 h-auto mt-2 text-destructive-foreground underline">
+                    {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {t('verify_email_resend_button')}
+                  </Button>
+                )}
               </AlertDescription>
             </Alert>
           )}

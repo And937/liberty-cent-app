@@ -57,6 +57,8 @@ export function VerifyForm() {
         } finally {
           setIsLoading(false);
         }
+      } else if (!authLoading && !user) {
+        setIsLoading(false);
       }
     };
 
@@ -221,5 +223,3 @@ const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: 
     </div>
   );
 }
-
-  

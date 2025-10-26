@@ -23,7 +23,6 @@ export function VerifyForm() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [docFront, setDocFront] = useState<File | null>(null);
-  const [docBack, setDocBack] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
@@ -65,14 +64,10 @@ export function VerifyForm() {
     }
   }, [user, idToken, authLoading, t, toast]);
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (side === 'front') {
-        setDocFront(file);
-      } else {
-        setDocBack(file);
-      }
+      setDocFront(file);
     }
   };
 
@@ -100,7 +95,6 @@ export function VerifyForm() {
     });
     
     setDocFront(null);
-    setDocBack(null);
     setIsSubmitting(false);
   };
 
@@ -149,8 +143,7 @@ export function VerifyForm() {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <FileInput id="doc-front" label={t('verification_file_front')} file={docFront} setFile={setDocFront} onChange={(e) => handleFileChange(e, 'front')} />
-                  <FileInput id="doc-back" label={t('verification_file_back')} file={docBack} setFile={setDocBack} onChange={(e) => handleFileChange(e, 'back')}/>
+                  <FileInput id="doc-front" label={t('verification_file_front')} file={docFront} setFile={setDocFront} onChange={handleFileChange} />
                 </div>
               <Button size="lg" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="animate-spin mr-2" />}

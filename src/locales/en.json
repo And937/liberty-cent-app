@@ -203,6 +203,9 @@
     "verify_email_alert_title": "Email Not Verified",
     "verify_email_alert_desc": "You must verify your email address before you can log in. Check your inbox for a verification link.",
 
+    "verification_page_title": "Account Verification",
+    "verification_page_description": "Secure your account and unlock all features by verifying your identity.",
+
     "verification_status_verified": "Account Verified",
     "verification_status_verified_desc": "Your account is verified and all features are unlocked.",
     "verification_status_verified_desc_full": "Your identity has been successfully verified. You now have full access to all platform features, including token purchases.",

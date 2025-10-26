@@ -202,6 +202,9 @@
     "verify_email_error_desc": "发生意外错误。",
     "verify_email_alert_title": "电子邮件未验证",
     "verify_email_alert_desc": "您必须先验证您的电子邮件地址才能登录。请检查您的收件箱中是否有验证链接。",
+    
+    "verification_page_title": "帐户验证",
+    "verification_page_description": "通过验证您的身份来保护您的帐户并解锁所有功能。",
 
     "verification_status_verified": "帐户已验证",
     "verification_status_verified_desc": "您的帐户已通过验证，所有功能均已解锁。",

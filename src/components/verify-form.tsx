@@ -234,5 +234,3 @@ const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: 
     </div>
   );
 }
-
-    

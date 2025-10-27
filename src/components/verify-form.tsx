@@ -13,7 +13,7 @@ import { useLanguage } from "@/context/language-context";
 import { useRouter } from "next/navigation";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { firebaseConfig } from "@/lib/firebase-admin-config"; // Changed back
+import { firebaseConfig } from "@/lib/firebase-admin-config";
 
 // Initialize Firebase
 let app: FirebaseApp;
@@ -234,3 +234,5 @@ const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: 
     </div>
   );
 }
+
+    

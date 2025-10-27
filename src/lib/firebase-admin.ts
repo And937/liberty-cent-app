@@ -6,13 +6,16 @@ import * as admin from 'firebase-admin';
 
 if (!admin.apps.length) {
   try {
+    // Using applicationDefault credentials relies on the GOOGLE_APPLICATION_CREDENTIALS
+    // environment variable being set in your deployment environment.
+    // This is the recommended approach for secure environments like production servers.
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
       storageBucket: "centswap.appspot.com",
     });
     console.log("Firebase Admin SDK initialized successfully.");
   } catch (error: any) {
-    console.error("Firebase Admin SDK initialization error:", error.stack);
+    console.error("Firebase Admin SDK initialization error. Make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is set.", error.stack);
   }
 }
 

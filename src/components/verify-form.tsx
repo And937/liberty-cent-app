@@ -11,8 +11,19 @@ import { Loader2, ShieldCheck, ShieldAlert, ShieldQuestion, UploadCloud, File, X
 import { Skeleton } from "./ui/skeleton";
 import { useLanguage } from "@/context/language-context";
 import { useRouter } from "next/navigation";
-import { storage } from "@/lib/firebase-config";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { firebaseConfig } from "@/lib/firebase-admin-config"; // Changed back
+
+// Initialize Firebase
+let app: FirebaseApp;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
+const storage = getStorage(app);
+
 
 export function VerifyForm() {
   const { user, loading: authLoading, idToken } = useAuth();

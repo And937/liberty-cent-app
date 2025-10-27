@@ -11,7 +11,9 @@ import {
   UserCredential,
   sendEmailVerification,
 } from 'firebase/auth';
-import { auth as firebaseAuth } from '@/lib/firebase-config';
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { firebaseConfig } from '@/lib/firebase-admin-config';
 
 interface AuthContextType {
   user: User | null;
@@ -30,8 +32,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [idToken, setIdToken] = useState<string | null>(null);
   
+  // Store Firebase instances in state to ensure they are stable
+  const [firebaseAuth, setFirebaseAuth] = useState<Auth | null>(null);
+
+  useEffect(() => {
+    // This effect runs once on mount to initialize Firebase
+    let app: FirebaseApp;
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApp();
+    }
+    setFirebaseAuth(getAuth(app));
+  }, []);
+  
   const handleUser = useCallback(async (rawUser: User | null) => {
-      if (rawUser) {
+      if (rawUser && firebaseAuth) {
           // It's important to get the latest state of the user object
           await rawUser.reload();
           const freshUser = firebaseAuth.currentUser;
@@ -44,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               } catch (error) {
                   console.error("Error getting ID token:", error);
                   setIdToken(null);
-                  await signOut(firebaseAuth);
+                  if (firebaseAuth) await signOut(firebaseAuth);
               }
           } else {
               setIdToken(null);
@@ -54,17 +70,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setIdToken(null);
       }
       setLoading(false);
-  }, []);
+  }, [firebaseAuth]);
 
 
   useEffect(() => {
-    // onAuthStateChanged is the primary listener for auth state.
-    // It handles initial load, signup, and logout.
-    const unsubscribe = onAuthStateChanged(firebaseAuth, handleUser);
-    return () => unsubscribe();
-  }, [handleUser]);
+    // This effect runs when firebaseAuth is initialized
+    if (firebaseAuth) {
+      const unsubscribe = onAuthStateChanged(firebaseAuth, handleUser);
+      return () => unsubscribe();
+    }
+  }, [firebaseAuth, handleUser]);
 
   const sendVerificationEmail = async (userParam?: User | null) => {
+    if (!firebaseAuth) throw new Error("Firebase Auth not initialized.");
     const targetUser = userParam || firebaseAuth.currentUser;
     if (targetUser) {
       await sendEmailVerification(targetUser);
@@ -74,19 +92,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (email: string, pass: string) => {
+    if (!firebaseAuth) throw new Error("Firebase Auth not initialized.");
     return createUserWithEmailAndPassword(firebaseAuth, email, pass);
   };
 
   const login = async (email: string, pass: string) => {
+    if (!firebaseAuth) throw new Error("Firebase Auth not initialized.");
     const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, pass);
-    // After login, we MUST manually trigger a reload to get the fresh emailVerified status.
-    // The onAuthStateChanged listener might not be fast enough or might have a stale user object.
     await handleUser(userCredential.user);
     return userCredential;
   };
 
   const logout = () => {
-    // onAuthStateChanged will handle setting user to null.
+    if (!firebaseAuth) throw new Error("Firebase Auth not initialized.");
     return signOut(firebaseAuth);
   };
 
@@ -111,3 +129,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+    

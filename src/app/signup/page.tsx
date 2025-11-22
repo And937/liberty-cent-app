@@ -51,8 +51,7 @@ function SignupForm() {
       
       const idToken = await userCredential.user.getIdToken();
 
-      // This function will now handle sending the verification email.
-      // We removed the extra sendVerificationEmail call from here.
+      // Create user document in Firestore first
       const result = await createUser({
         uid: userCredential.user.uid,
         email: userCredential.user.email!,
@@ -61,14 +60,21 @@ function SignupForm() {
       });
 
       if (!result.success) {
-        console.error("Failed to create user document in Firestore:", result.error);
-        toast({
-          variant: "destructive",
-          title: t('signup_toast_partial_title'),
-          description: t('signup_toast_partial_desc')
-        });
+        throw new Error(result.error || t('signup_toast_partial_desc'));
       }
       
+      // THEN send the verification email from the client
+      try {
+        await sendVerificationEmail(userCredential.user);
+      } catch (emailError: any) {
+         console.error("Failed to send verification email, but user created:", emailError);
+         toast({
+          variant: "destructive",
+          title: t('verify_email_error_title'),
+          description: emailError.message,
+        });
+      }
+
       setSignupSuccess(true);
       
     } catch (error: any) {

@@ -74,10 +74,6 @@ export async function createUser(data: { uid: string; email: string, idToken: st
       verificationStatus: 'unverified',
     }, { merge: true });
     
-    // Also send verification email from the backend for consistency
-    await auth().generateEmailVerificationLink(data.email);
-
-
     return { success: true };
   } catch (error: any) {
     console.error("Error creating user in Firestore:", error.message);

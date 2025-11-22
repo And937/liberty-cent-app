@@ -21,11 +21,8 @@ async function verifyToken(idToken: string | undefined | null) {
 }
 
 // Server action to create a user document in Firestore
-export async function createUser(data: { uid: string; email: string, idToken: string, referralCode?: string | null }) {
+export async function createUser(data: { uid: string; email: string, referralCode?: string | null }) {
   try {
-    // The token here is to ensure the call is from an auth'd user.
-    await verifyToken(data.idToken);
-
     if (!adminDb) {
         throw new Error('Firestore is not initialized.');
     }
@@ -207,7 +204,7 @@ export async function getDailyBonusStatus(data: { idToken: string }): Promise<{
 
         if (!userDoc.exists) {
             // This case should ideally not happen if user is created on signup.
-            return { success: true, canClaim: true, streak: 0, bonusAmount: 10 };
+            return { success: true, canClaim: true, streak: 0, bonusAmount: getBonusAmount(0) };
         }
 
         const userData = userDoc.data()!;

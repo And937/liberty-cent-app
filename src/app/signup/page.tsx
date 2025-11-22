@@ -49,13 +49,10 @@ function SignupForm() {
     try {
       const userCredential = await signup(email, password);
       
-      const idToken = await userCredential.user.getIdToken();
-
       // Create user document in Firestore first
       const result = await createUser({
         uid: userCredential.user.uid,
         email: userCredential.user.email!,
-        idToken: idToken,
         referralCode: referralCode || null,
       });
 
@@ -68,11 +65,9 @@ function SignupForm() {
         await sendVerificationEmail(userCredential.user);
       } catch (emailError: any) {
          console.error("Failed to send verification email, but user created:", emailError);
-         toast({
-          variant: "destructive",
-          title: t('verify_email_error_title'),
-          description: emailError.message,
-        });
+         // Don't toast this specific error to avoid confusing the user.
+         // They will see the "Confirm your email" screen anyway.
+         // We still show the success screen.
       }
 
       setSignupSuccess(true);

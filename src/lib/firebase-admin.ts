@@ -4,6 +4,9 @@ import * as admin from 'firebase-admin';
 // This is a server-side only file.
 // Do not import it into any client-side code.
 
+let adminDb: admin.firestore.Firestore;
+let adminAuth: admin.auth.Auth;
+
 if (!admin.apps.length) {
   try {
     // Using applicationDefault credentials relies on the GOOGLE_APPLICATION_CREDENTIALS
@@ -19,9 +22,9 @@ if (!admin.apps.length) {
   }
 }
 
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
+adminDb = admin.firestore();
+adminAuth = admin.auth();
 
+export { adminDb, adminAuth };
 export default admin.app();
-
     

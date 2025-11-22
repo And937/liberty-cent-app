@@ -11,9 +11,7 @@ import {
   UserCredential,
   sendEmailVerification,
 } from 'firebase/auth';
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
-import { firebaseConfig } from "@/lib/firebase-admin-config";
+import { getFirebase } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -27,16 +25,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Initialize Firebase
-// This is safe to be outside the component as it checks for existing apps.
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
-const auth = getAuth(app);
-
+// Get auth instance from the central firebase lib
+const { auth } = getFirebase();
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -120,5 +110,4 @@ export const useAuth = () => {
   }
   return context;
 };
-
     

@@ -12,17 +12,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useLanguage } from "@/context/language-context";
 import { useRouter } from "next/navigation";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { firebaseConfig } from "@/lib/firebase-admin-config";
-
-// Initialize Firebase
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
-const storage = getStorage(app);
+import { getFirebase } from "@/lib/firebase";
 
 
 export function VerifyForm() {
@@ -109,6 +99,7 @@ export function VerifyForm() {
     
     setIsSubmitting(true);
     try {
+        const { storage } = getFirebase();
         const fileRef = ref(storage, `verificationDocs/${user.uid}/${docFront.name}`);
         
         await uploadBytes(fileRef, docFront);
@@ -234,5 +225,4 @@ const FileInput = ({ id, label, file, setFile, onChange }: { id: string, label: 
     </div>
   );
 }
-
-  
+    

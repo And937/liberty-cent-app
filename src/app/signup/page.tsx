@@ -51,8 +51,8 @@ function SignupForm() {
       
       const idToken = await userCredential.user.getIdToken();
 
-      await sendVerificationEmail(userCredential.user);
-
+      // This function will now handle sending the verification email.
+      // We removed the extra sendVerificationEmail call from here.
       const result = await createUser({
         uid: userCredential.user.uid,
         email: userCredential.user.email!,

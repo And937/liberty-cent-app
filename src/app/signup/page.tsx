@@ -79,6 +79,7 @@ function SignupForm() {
   };
 
   const handleResendVerification = async () => {
+    if (isResending) return;
     setIsResending(true);
     try {
       await sendVerificationEmail();
@@ -144,7 +145,7 @@ function SignupForm() {
                 </div>
                  <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="w-full h-auto p-0 text-muted-foreground">
                     {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('verify_email_resend_button')}
+                    {isResending ? t('bonus_button_claiming') : t('verify_email_resend_button')}
                 </Button>
             </div>
           </CardContent>

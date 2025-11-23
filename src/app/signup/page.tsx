@@ -62,20 +62,9 @@ function SignupForm() {
         throw new Error(createDbUserResult.error || t('signup_toast_partial_desc'));
       }
       
-      // 3. Send verification email from the client (only if previous steps were successful)
-      try {
-        await sendVerificationEmail(userCredential.user);
-      } catch (emailError: any) {
-         // This might fail due to rate-limiting, but we don't block the user.
-         // They can resend it from the next screen.
-         console.error("Failed to send verification email, but user created:", emailError);
-         toast({
-            variant: "destructive",
-            title: t('verify_email_error_title'),
-            description: emailError.message,
-         });
-      }
-
+      // 3. Send verification email from the client
+      await sendVerificationEmail(userCredential.user);
+      
       setSignupSuccess(true);
       
     } catch (error: any) {

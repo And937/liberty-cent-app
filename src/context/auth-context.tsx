@@ -37,25 +37,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setLoading(true);
       if (currentUser) {
-        // Always reload to get the latest user state (e.g., emailVerified)
-        await currentUser.reload();
-        // After reload, get the fresh user object
-        const freshUser = auth.currentUser;
-        setUser(freshUser);
-
-        if (freshUser && freshUser.emailVerified) {
-          try {
-            const token = await freshUser.getIdToken(true); // Force refresh the token
-            setIdToken(token);
-          } catch (error) {
-            console.error("Error getting ID token:", error);
-            setIdToken(null);
-            await signOut(auth); // Log out if token fails
-          }
-        } else {
-          // User is not verified, no token needed
-          setIdToken(null);
-        }
+        setUser(currentUser);
+        const token = await currentUser.getIdToken();
+        setIdToken(token);
       } else {
         setUser(null);
         setIdToken(null);

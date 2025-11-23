@@ -1,7 +1,7 @@
 
 'use server';
 
-import { auth } from 'firebase-admin';
+import { auth as adminAuth } from 'firebase-admin';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase-admin';
 
@@ -13,7 +13,7 @@ async function verifyToken(idToken: string | undefined | null) {
     throw new Error("User not authenticated.");
   }
   try {
-    return await auth().verifyIdToken(idToken);
+    return await adminAuth().verifyIdToken(idToken);
   } catch (error: any) {
     console.error('Error verifying ID token:', error);
     throw new Error('Authentication token is invalid. Please log in again.');

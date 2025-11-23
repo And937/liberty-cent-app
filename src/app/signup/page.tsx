@@ -47,27 +47,33 @@ function SignupForm() {
     e.preventDefault();
     setIsLoading(true);
     try {
+      // 1. Create user in Firebase Auth
       const userCredential = await signup(email, password);
       
-      // Create user document in Firestore first
-      const result = await createUser({
+      // 2. Create user document in Firestore via Server Action
+      const createDbUserResult = await createUser({
         uid: userCredential.user.uid,
         email: userCredential.user.email!,
         referralCode: referralCode || null,
       });
 
-      if (!result.success) {
-        throw new Error(result.error || t('signup_toast_partial_desc'));
+      if (!createDbUserResult.success) {
+        // If Firestore document creation fails, stop and show error
+        throw new Error(createDbUserResult.error || t('signup_toast_partial_desc'));
       }
       
-      // THEN send the verification email from the client
+      // 3. Send verification email from the client (only if previous steps were successful)
       try {
         await sendVerificationEmail(userCredential.user);
       } catch (emailError: any) {
+         // This might fail due to rate-limiting, but we don't block the user.
+         // They can resend it from the next screen.
          console.error("Failed to send verification email, but user created:", emailError);
-         // Don't toast this specific error to avoid confusing the user.
-         // They will see the "Confirm your email" screen anyway.
-         // We still show the success screen.
+         toast({
+            variant: "destructive",
+            title: t('verify_email_error_title'),
+            description: emailError.message,
+         });
       }
 
       setSignupSuccess(true);

@@ -25,13 +25,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Get auth instance from the central firebase lib
-const { auth } = getFirebase();
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [idToken, setIdToken] = useState<string | null>(null);
+  const { auth } = getFirebase();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -48,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [auth]);
 
 
   const sendVerificationEmail = async (userParam?: User | null) => {

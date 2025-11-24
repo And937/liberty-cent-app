@@ -14,6 +14,8 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
+const COOLDOWN_SECONDS = 60;
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +27,15 @@ export default function LoginPage() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+   useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldown > 0) {
+      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
 
   useEffect(() => {
@@ -34,6 +45,8 @@ export default function LoginPage() {
   }, [user, authLoading, router]);
 
   const handleResendVerification = async () => {
+    if (isResending || cooldown > 0) return;
+
     setIsResending(true);
     try {
         await sendVerificationEmail();
@@ -41,12 +54,16 @@ export default function LoginPage() {
             title: t('verify_email_sent_title'),
             description: t('verify_email_sent_desc'),
         });
+        setCooldown(COOLDOWN_SECONDS); // Start cooldown on success
     } catch (error: any) {
         toast({
             variant: "destructive",
             title: t('verify_email_error_title'),
             description: error.message || t('verify_email_error_desc'),
         });
+        if (error.code === 'auth/too-many-requests') {
+          setCooldown(COOLDOWN_SECONDS); // Start cooldown on rate limit error too
+        }
     } finally {
         setIsResending(false);
     }
@@ -102,9 +119,14 @@ export default function LoginPage() {
                 {error}
                 {/* Show resend button only for verification error */}
                 {error === t('verify_email_alert_desc') && (
-                  <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="p-0 h-auto mt-2 text-destructive-foreground underline">
-                    {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {t('verify_email_resend_button')}
+                  <Button 
+                    onClick={handleResendVerification} 
+                    disabled={isResending || cooldown > 0} 
+                    variant="link" 
+                    className="p-0 h-auto mt-2 text-destructive-foreground underline"
+                  >
+                    {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `Повторить через ${cooldown} с` : t('verify_email_resend_button'))}
                   </Button>
                 )}
               </AlertDescription>

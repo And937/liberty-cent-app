@@ -20,68 +20,23 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { login, user, loading: authLoading, sendVerificationEmail } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
-  const { toast } = useToast();
   
-  const [isResending, setIsResending] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-
   useEffect(() => {
-    if (!authLoading && user && user.emailVerified) {
+    if (!authLoading && user) {
       router.push('/account');
     }
   }, [user, authLoading, router]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (cooldown > 0) {
-      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [cooldown]);
-
-
-  const handleResendVerification = async () => {
-    if (isResending || cooldown > 0) return;
-
-    setIsResending(true);
-    try {
-        await sendVerificationEmail();
-        toast({
-            title: t('verify_email_sent_title'),
-            description: t('verify_email_sent_desc'),
-        });
-        setCooldown(60); // Start 60-second cooldown
-    } catch (error: any) {
-        let errorMessage = error.message;
-        if (error.code === 'auth/too-many-requests') {
-            errorMessage = "Вы отправили слишком много запросов. Попробуйте позже.";
-        }
-        toast({
-            variant: "destructive",
-            title: t('verify_email_error_title'),
-            description: errorMessage,
-        });
-    } finally {
-        setIsResending(false);
-    }
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      const userCredential = await login(email, password);
-      
-      if (userCredential.user && !userCredential.user.emailVerified) {
-        setError(t('verify_email_alert_desc'));
-      } else {
-        router.push('/account');
-      }
-
+      await login(email, password);
+      router.push('/account');
     } catch (error: any) {
         let errorMessage = error.message;
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
@@ -93,7 +48,7 @@ export default function LoginPage() {
     }
   };
   
-  if (authLoading || (user && user.emailVerified)) {
+  if (authLoading || user) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -115,17 +70,6 @@ export default function LoginPage() {
               <AlertTitle>{t('login_toast_failed_title')}</AlertTitle>
               <AlertDescription>
                 {error}
-                {error === t('verify_email_alert_desc') && (
-                  <Button 
-                    onClick={handleResendVerification} 
-                    disabled={isResending || cooldown > 0} 
-                    variant="secondary"
-                    className="w-full mt-4"
-                  >
-                    {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `Повторить через ${cooldown} с.` : t('verify_email_resend_button'))}
-                  </Button>
-                )}
               </AlertDescription>
             </Alert>
           )}

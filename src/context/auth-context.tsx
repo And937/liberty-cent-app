@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       if (currentUser) {
         setUser(currentUser);
-        const token = await currentUser.getIdToken();
+        const token = await currentUser.getIdToken(true); // Force refresh
         setIdToken(token);
       } else {
         setUser(null);
@@ -45,7 +45,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Refresh token every 10 minutes
+    const interval = setInterval(async () => {
+      if (auth.currentUser) {
+        try {
+          const token = await auth.currentUser.getIdToken(true);
+          setIdToken(token);
+        } catch (error) {
+          console.error("Error refreshing token:", error);
+          // Handle token refresh error, e.g., by logging out the user
+          await logout();
+        }
+      }
+    }, 10 * 60 * 1000);
+
+
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    }
   }, [auth]);
 
 
@@ -59,11 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (email: string, pass: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-    if (userCredential.user) {
-        await sendVerificationEmail(userCredential.user);
-    }
-    return userCredential;
+    return createUserWithEmailAndPassword(auth, email, pass);
   };
 
   const login = (email: string, pass: string) => {

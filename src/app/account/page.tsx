@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { getUserBalance } from "@/app/actions";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Mail, Copy, Gift, Link as LinkIcon, ShieldCheck, ShieldAlert, ShieldQuestion } from "lucide-react";
+import { Loader2, Mail, Copy, Gift, Link as LinkIcon, ShieldCheck, ShieldAlert, ShieldQuestion, CheckCircle2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
@@ -16,7 +16,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
 export default function AccountPage() {
-  const { user, loading: authLoading, idToken } = useAuth();
+  const { user, loading: authLoading, idToken, sendVerificationEmail } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -27,15 +27,26 @@ export default function AccountPage() {
   const [isBalanceLoading, setIsBalanceLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
   useEffect(() => {
-    if (!authLoading && (!user || !user.emailVerified)) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldown > 0) {
+      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   useEffect(() => {
     const fetchAccountData = async () => {
-      if (user && user.emailVerified && idToken) {
+      if (user && idToken) {
         setIsBalanceLoading(true);
         setError(null);
         try {
@@ -62,7 +73,7 @@ export default function AccountPage() {
       }
     };
 
-    if (!authLoading && user && user.emailVerified) {
+    if (!authLoading && user) {
       fetchAccountData();
     }
   }, [user, authLoading, idToken, t, toast]);
@@ -75,7 +86,34 @@ export default function AccountPage() {
     });
   };
 
-  if (authLoading || !user || !user.emailVerified) {
+  const handleResendVerification = async () => {
+    if (!user || isResending || cooldown > 0) return;
+
+    setIsResending(true);
+    try {
+        await sendVerificationEmail(user);
+        toast({
+            title: t('verify_email_sent_title'),
+            description: t('verify_email_sent_desc'),
+        });
+        setCooldown(60); // Start 60-second cooldown
+    } catch (error: any) {
+        let errorMessage = error.message;
+        if (error.code === 'auth/too-many-requests') {
+            errorMessage = "Вы отправили слишком много запросов. Попробуйте позже.";
+        }
+        toast({
+            variant: "destructive",
+            title: t('verify_email_error_title'),
+            description: errorMessage,
+        });
+    } finally {
+        setIsResending(false);
+    }
+  };
+
+
+  if (authLoading || !user) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -161,26 +199,47 @@ export default function AccountPage() {
             <p className="text-muted-foreground">{t('account_description')}</p>
         </div>
         
+        <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10">
+            <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                    <Mail className="h-5 w-5 text-muted-foreground"/>
+                    <span>{t('account_email')}</span>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <p className="text-base font-medium text-foreground break-all flex-1">{user.email}</p>
+                    {user.emailVerified ? (
+                        <div className="inline-flex items-center gap-2 text-sm font-medium text-green-600 bg-green-100 px-3 py-1.5 rounded-full">
+                            <CheckCircle2 className="h-4 w-4"/>
+                            <span>{t('verified')}</span>
+                        </div>
+                    ) : (
+                         <div className="flex flex-col items-stretch sm:items-end gap-2 w-full sm:w-auto">
+                            <div className="inline-flex items-center gap-2 text-sm font-medium text-yellow-600 bg-yellow-100 px-3 py-1.5 rounded-full">
+                                <AlertCircle className="h-4 w-4"/>
+                                <span>{t('unverified')}</span>
+                            </div>
+                            <Button 
+                                onClick={handleResendVerification} 
+                                disabled={isResending || cooldown > 0} 
+                                variant="secondary"
+                                size="sm"
+                                className="w-full sm:w-auto"
+                            >
+                                {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `${t('verify_email_cooldown')} ${cooldown} с.` : t('verify_email_resend_button'))}
+                            </Button>
+                         </div>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+
         <VerificationStatusCard />
 
         <div className="grid md:grid-cols-2 gap-6">
-             <Card className="shadow-lg bg-card/50 backdrop-blur-lg border border-white/10 text-center">
-                <CardHeader>
-                    <div className="flex justify-center items-center mb-2">
-                        <div className="p-3 bg-primary/10 rounded-full">
-                            <Mail className="h-8 w-8 text-primary" />
-                        </div>
-                    </div>
-                    <CardTitle className="text-xl">
-                        {t('account_email')}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-base font-medium text-foreground break-all">{user.email}</p>
-                </CardContent>
-            </Card>
-
-             <Card>
+            <Card>
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Gift className="h-5 w-5 text-muted-foreground"/>
@@ -219,25 +278,24 @@ export default function AccountPage() {
                     )}
                 </CardContent>
             </Card>
+            
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle>{t('account_balance_title')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isBalanceLoading ? (
+                  <Skeleton className="h-12 w-48" />
+                ) : error ? (
+                  <p className="text-destructive-foreground bg-destructive p-3 rounded-md">{error}</p>
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {(balance ?? 0).toLocaleString()} CENT
+                  </p>
+                )}
+              </CardContent>
+            </Card>
         </div>
-
-
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle>{t('account_balance_title')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isBalanceLoading ? (
-              <Skeleton className="h-12 w-48" />
-            ) : error ? (
-              <p className="text-destructive-foreground bg-destructive p-3 rounded-md">{error}</p>
-            ) : (
-              <p className="text-4xl font-bold text-primary">
-                {(balance ?? 0).toLocaleString()} CENT
-              </p>
-            )}
-          </CardContent>
-        </Card>
         
         <DailyBonusCard />
 

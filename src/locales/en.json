@@ -18,6 +18,7 @@
     "pending": "Pending",
     "rejected": "Rejected",
     "go_to_verification": "Go to Verification",
+    "go_to_account": "Go to Personal Account",
     "login_first_error": "You must be logged in to perform this action.",
 
     "trade_card_title": "Buy CENT",
@@ -130,7 +131,7 @@
 
     "account_title": "Personal Account",
     "account_description": "This is your personal account page. You can view your current balance and status here.",
-    "account_verification_title": "Verification Status",
+    "account_verification_title": "ID Verification Status",
     "account_email": "Account Email",
     "account_referral_title": "Your Referral Info",
     "account_referral_code_label": "Your Referral Code",
@@ -193,19 +194,16 @@
     "bonus_error_claim_failed": "Failed to claim bonus.",
     "bonus_error_unexpected_claim": "An unexpected error occurred.",
     
-    "verify_email_title": "Verify Your Email",
-    "verify_email_description": "Your account has been created, but you need to verify your email address to continue.",
-    "verify_email_message": "A verification link has been sent to **{email}**. Please check your inbox (and spam folder) to activate your account.",
-    "verify_email_resend_button": "Resend Verification Email",
+    "verify_email_resend_button": "Send Verification Email",
     "verify_email_sent_title": "Verification Email Sent",
     "verify_email_sent_desc": "A new verification link has been sent to your email address.",
     "verify_email_error_title": "Error Sending Email",
-    "verify_email_error_desc": "An unexpected error occurred.",
-    "verify_email_alert_title": "Email Not Verified",
-    "verify_email_alert_desc": "You must verify your email address before you can log in. Check your inbox for a verification link.",
+    "verify_email_cooldown": "Resend in",
 
     "verification_page_title": "Account Verification",
     "verification_page_description": "Secure your account and unlock all features by verifying your identity.",
+    "verification_email_first_title": "Verify Your Email First",
+    "verification_email_first_desc": "To proceed with ID verification, you must first verify your email address.",
 
     "verification_status_verified": "Account Verified",
     "verification_status_verified_desc": "Your account is verified and all features are unlocked.",

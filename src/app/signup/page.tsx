@@ -21,11 +21,14 @@ function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
   
-  const { signup, user, loading: authLoading } = useAuth();
+  const { signup, user, loading: authLoading, sendVerificationEmail } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
+  
+  const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
     if (searchParams) {
@@ -42,11 +45,45 @@ function SignupForm() {
     }
   }, [user, authLoading, router]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldown > 0) {
+      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [cooldown]);
+
+  const handleResendVerification = async () => {
+    if (isResending || cooldown > 0) return;
+
+    setIsResending(true);
+    try {
+        await sendVerificationEmail();
+        toast({
+            title: t('verify_email_sent_title'),
+            description: t('verify_email_sent_desc'),
+        });
+        setCooldown(60); // Start 60-second cooldown
+    } catch (error: any) {
+        let errorMessage = error.message;
+        if (error.code === 'auth/too-many-requests') {
+            errorMessage = "Вы отправили слишком много запросов. Попробуйте позже.";
+        }
+        toast({
+            variant: "destructive",
+            title: t('verify_email_error_title'),
+            description: errorMessage,
+        });
+    } finally {
+        setIsResending(false);
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // 1. Create user in Firebase Auth
+      // 1. Create user in Firebase Auth & send email
       const userCredential = await signup(email, password);
       
       // 2. Create user document in Firestore via Server Action
@@ -92,11 +129,14 @@ function SignupForm() {
                   </div>
               </div>
             <CardTitle className="text-2xl">{t('signup_success_title')}</CardTitle>
-            <CardDescription>{t('signup_success_description')}</CardDescription>
+            <CardDescription className="px-4" dangerouslySetInnerHTML={{ __html: t('signup_success_message', { email }) }}/>
           </CardHeader>
           <CardContent className="space-y-4">
-             <div className="p-4 bg-muted rounded-md text-sm text-center" dangerouslySetInnerHTML={{ __html: t('signup_success_login_instruction') }} />
-             <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4">
+                <Button onClick={handleResendVerification} disabled={isResending || cooldown > 0} variant="secondary" className="w-full">
+                    {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `Повторить через ${cooldown} с.` : t('verify_email_resend_button'))}
+                </Button>
                 <Button onClick={() => router.push('/login')} variant="default" className="w-full">
                     {t('signup_success_button')}
                 </Button>

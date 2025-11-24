@@ -119,8 +119,8 @@ export default function LoginPage() {
                   <Button 
                     onClick={handleResendVerification} 
                     disabled={isResending || cooldown > 0} 
-                    variant="link" 
-                    className="p-0 h-auto mt-2 text-destructive-foreground underline"
+                    variant="secondary"
+                    className="w-full mt-4"
                   >
                     {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `Повторить через ${cooldown} с.` : t('verify_email_resend_button'))}

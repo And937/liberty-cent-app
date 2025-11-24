@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/context/auth-context";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -21,9 +21,7 @@ function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
   
-  const [isResending, setIsResending] = useState(false);
-
-  const { signup, user, loading: authLoading, sendVerificationEmail } = useAuth();
+  const { signup, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -59,12 +57,8 @@ function SignupForm() {
       });
 
       if (!createDbUserResult.success) {
-        // If Firestore document creation fails, stop and show error
         throw new Error(createDbUserResult.error || t('signup_toast_partial_desc'));
       }
-      
-      // 3. Send verification email from the client
-      await sendVerificationEmail(userCredential.user);
       
       setSignupSuccess(true);
       
@@ -79,27 +73,6 @@ function SignupForm() {
     }
   };
 
-  const handleResendVerification = useCallback(async () => {
-    if (isResending) return;
-    
-    setIsResending(true);
-    try {
-      await sendVerificationEmail();
-      toast({
-        title: t('verify_email_sent_title'),
-        description: t('verify_email_sent_desc'),
-      });
-    } catch (error: any) {
-       toast({
-        variant: "destructive",
-        title: t('verify_email_error_title'),
-        description: error.message || t('verify_email_error_desc'),
-      });
-    } finally {
-        setIsResending(false);
-    }
-  }, [isResending, sendVerificationEmail, t, toast]);
-
   if (authLoading) {
      return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -107,21 +80,8 @@ function SignupForm() {
       </div>
     );
   }
-  
-  if (user && !user.emailVerified && !signupSuccess) {
-     // If user exists but is not verified, they might have refreshed the success page.
-     // Show them the success page again.
-     setSignupSuccess(true);
-     setEmail(user.email || '');
-     return (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-      );
-  }
 
-
-  if (signupSuccess) {
+  if (signupSuccess || (user && !user.emailVerified)) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-transparent -mt-16">
         <Card className="w-full max-w-md shadow-2xl text-center bg-card/50 backdrop-blur-lg border border-white/10">
@@ -135,19 +95,10 @@ function SignupForm() {
             <CardDescription>{t('signup_success_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              {t('signup_success_message', { email: email })}
-            </p>
+             <div className="p-4 bg-muted rounded-md text-sm text-center" dangerouslySetInnerHTML={{ __html: t('signup_success_login_instruction') }} />
              <div className="flex flex-col items-center gap-4">
-                <div className="w-full text-center space-y-2">
-                    <p className="text-xs text-muted-foreground">{t('signup_success_login_instruction')}</p>
-                    <Button onClick={() => router.push('/login')} variant="default" className="w-full">
-                        {t('signup_success_button')}
-                    </Button>
-                </div>
-                 <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="w-full h-auto p-0 text-muted-foreground">
-                    {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isResending ? t('bonus_button_claiming') : t('verify_email_resend_button')}
+                <Button onClick={() => router.push('/login')} variant="default" className="w-full">
+                    {t('signup_success_button')}
                 </Button>
             </div>
           </CardContent>

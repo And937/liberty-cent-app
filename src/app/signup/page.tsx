@@ -14,8 +14,6 @@ import { Loader2, Mail } from "lucide-react";
 import { createUser } from "@/app/actions";
 import { useLanguage } from "@/context/language-context";
 
-const COOLDOWN_SECONDS = 60;
-
 function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +22,6 @@ function SignupForm() {
   const [signupSuccess, setSignupSuccess] = useState(false);
   
   const [isResending, setIsResending] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
 
   const { signup, user, loading: authLoading, sendVerificationEmail } = useAuth();
   const router = useRouter();
@@ -40,15 +37,6 @@ function SignupForm() {
       }
     }
   }, [searchParams]);
-  
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (cooldown > 0) {
-      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [cooldown]);
-
 
   useEffect(() => {
     if (!authLoading && user?.emailVerified) {
@@ -92,7 +80,7 @@ function SignupForm() {
   };
 
   const handleResendVerification = useCallback(async () => {
-    if (isResending || cooldown > 0) return;
+    if (isResending) return;
     
     setIsResending(true);
     try {
@@ -101,20 +89,16 @@ function SignupForm() {
         title: t('verify_email_sent_title'),
         description: t('verify_email_sent_desc'),
       });
-      setCooldown(COOLDOWN_SECONDS); // Start cooldown on success
     } catch (error: any) {
        toast({
         variant: "destructive",
         title: t('verify_email_error_title'),
         description: error.message || t('verify_email_error_desc'),
       });
-      if (error.code === 'auth/too-many-requests') {
-          setCooldown(COOLDOWN_SECONDS); // Start cooldown on rate limit error too
-      }
     } finally {
         setIsResending(false);
     }
-  }, [isResending, cooldown, sendVerificationEmail, t, toast]);
+  }, [isResending, sendVerificationEmail, t, toast]);
 
   if (authLoading) {
      return (
@@ -161,9 +145,9 @@ function SignupForm() {
                         {t('signup_success_button')}
                     </Button>
                 </div>
-                 <Button onClick={handleResendVerification} disabled={isResending || cooldown > 0} variant="link" className="w-full h-auto p-0 text-muted-foreground">
+                 <Button onClick={handleResendVerification} disabled={isResending} variant="link" className="w-full h-auto p-0 text-muted-foreground">
                     {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `Повторить через ${cooldown} с` : t('verify_email_resend_button'))}
+                    {isResending ? t('bonus_button_claiming') : t('verify_email_resend_button')}
                 </Button>
             </div>
           </CardContent>

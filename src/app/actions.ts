@@ -151,7 +151,7 @@ export async function logTransaction(data: {
       throw new Error('Firestore is not initialized.');
     }
     
-    // Check verification status
+    // Check verification status - REMOVED this check as per new logic
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
     if (!userDoc.exists || userDoc.data()?.verificationStatus !== 'verified') {
@@ -323,11 +323,11 @@ export async function submitVerificationRequest(data: { idToken: string; documen
       createdAt: FieldValue.serverTimestamp(),
     });
 
-    // Update the user's status to pending
-    const userRef = adminDb.collection('users').doc(uid);
-    await userRef.update({
-        verificationStatus: 'pending'
-    });
+    // DO NOT update user status to pending automatically. This will be done by an admin.
+    // const userRef = adminDb.collection('users').doc(uid);
+    // await userRef.update({
+    //     verificationStatus: 'pending'
+    // });
 
     return { success: true };
   } catch (error: any) {

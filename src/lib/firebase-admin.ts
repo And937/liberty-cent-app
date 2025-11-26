@@ -38,4 +38,3 @@ if (!admin.apps.length) {
 }
 
 export { adminDb, adminAuth };
-export default admin.apps.length ? admin.app() : undefined;

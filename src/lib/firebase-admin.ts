@@ -1,8 +1,8 @@
 
 import * as admin from 'firebase-admin';
-
-// This is a server-side only file.
-// Do not import it into any client-side code.
+import { App, getApp, getApps, initializeApp } from 'firebase-admin/app';
+import { Auth, getAuth } from 'firebase-admin/auth';
+import { Firestore, getFirestore } from 'firebase-admin/firestore';
 
 const serviceAccount: any = {
   "projectId": "centswap",
@@ -17,24 +17,21 @@ const serviceAccount: any = {
   "universe_domain": "googleapis.com"
 };
 
-let adminDb: admin.firestore.Firestore | null = null;
-let adminAuth: admin.auth.Auth | null = null;
 
-if (!admin.apps.length) {
-    try {
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-            storageBucket: "centswap.appspot.com",
-        });
-        adminDb = admin.firestore();
-        adminAuth = admin.auth();
-        console.log("Firebase Admin SDK initialized successfully.");
-    } catch (error: any) {
-        console.error('Firebase admin initialization error', error.stack);
+const getAdminApp = (): App => {
+    if (getApps().length > 0) {
+        return getApp();
     }
-} else {
-    adminDb = admin.firestore();
-    adminAuth = admin.auth();
+    return initializeApp({
+        credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+        storageBucket: "centswap.appspot.com",
+    });
 }
 
-export { adminDb, adminAuth };
+export const getAdminAuth = (): Auth => {
+    return getAuth(getAdminApp());
+};
+
+export const getAdminDb = (): Firestore => {
+    return getFirestore(getAdminApp());
+};

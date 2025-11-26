@@ -1,19 +1,16 @@
 
 'use server';
 
-import { auth as adminAuth } from 'firebase-admin';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb, getAdminAuth } from '@/lib/firebase-admin';
 
 async function verifyToken(idToken: string | undefined | null) {
-  if (!adminDb) {
-    throw new Error("Firebase Admin SDK not initialized.");
-  }
+  const adminAuth = getAdminAuth();
   if (!idToken) {
     throw new Error("User not authenticated.");
   }
   try {
-    return await adminAuth().verifyIdToken(idToken);
+    return await adminAuth.verifyIdToken(idToken);
   } catch (error: any) {
     console.error('Error verifying ID token:', error);
     throw new Error('Authentication token is invalid. Please log in again.');
@@ -23,10 +20,7 @@ async function verifyToken(idToken: string | undefined | null) {
 // Server action to create a user document in Firestore
 export async function createUser(data: { uid: string; email: string, referralCode?: string | null }) {
   try {
-    if (!adminDb) {
-        throw new Error('Firestore is not initialized.');
-    }
-
+    const adminDb = getAdminDb();
     const userRef = adminDb.collection('users').doc(data.uid);
     
     // Generate a unique referral code from the user's UID
@@ -83,15 +77,12 @@ export async function getUserBalance(data: { idToken: string }): Promise<{
     balance?: number; 
     referralCode?: string; 
     verificationStatus?: string;
-    error?: string 
+    error?: string;
 }> {
   try {
     const decodedToken = await verifyToken(data.idToken);
     const userId = decodedToken.uid;
-
-    if (!adminDb) {
-        throw new Error('Firestore is not initialized.');
-    }
+    const adminDb = getAdminDb();
 
     const userRef = adminDb.collection('users').doc(userId);
     const docSnap = await userRef.get();
@@ -146,10 +137,7 @@ export async function logTransaction(data: {
   try {
     const decodedToken = await verifyToken(data.idToken);
     const { uid, email } = decodedToken;
-
-    if (!adminDb) {
-      throw new Error('Firestore is not initialized.');
-    }
+    const adminDb = getAdminDb();
     
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
@@ -198,7 +186,8 @@ export async function getDailyBonusStatus(data: { idToken: string }): Promise<{
 }> {
     try {
         const decodedToken = await verifyToken(data.idToken);
-        const userRef = adminDb!.collection('users').doc(decodedToken.uid);
+        const adminDb = getAdminDb();
+        const userRef = adminDb.collection('users').doc(decodedToken.uid);
         const userDoc = await userRef.get();
 
         if (!userDoc.exists) {
@@ -254,9 +243,10 @@ export async function claimDailyBonus(data: { idToken: string }): Promise<{
 }> {
     try {
         const decodedToken = await verifyToken(data.idToken);
-        const userRef = adminDb!.collection('users').doc(decodedToken.uid);
+        const adminDb = getAdminDb();
+        const userRef = adminDb.collection('users').doc(decodedToken.uid);
 
-        return await adminDb!.runTransaction(async (transaction) => {
+        return await adminDb.runTransaction(async (transaction) => {
             const userDoc = await transaction.get(userRef);
             if (!userDoc.exists) {
                 throw new Error("User document does not exist.");
@@ -308,10 +298,7 @@ export async function submitVerificationRequest(data: { idToken: string; documen
   try {
     const decodedToken = await verifyToken(data.idToken);
     const { uid } = decodedToken;
-
-    if (!adminDb) {
-      throw new Error('Firestore is not initialized.');
-    }
+    const adminDb = getAdminDb();
     
     // Create a request in the verificationRequests collection
     const requestRef = adminDb.collection('verificationRequests').doc();

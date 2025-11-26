@@ -1,6 +1,6 @@
 
 import { NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { headers } from 'next/headers';
 
@@ -12,10 +12,7 @@ export async function GET(request: Request) {
   if (authorization !== `Bearer MySuperSecretCronPassword12345!`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  if (!adminDb) {
-    return NextResponse.json({ error: 'Firestore is not initialized.' }, { status: 500 });
-  }
+  const adminDb = getAdminDb();
 
   try {
     const usersRef = adminDb.collection('users');

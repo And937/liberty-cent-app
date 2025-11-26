@@ -20,7 +20,7 @@ interface AuthContextType {
   signup: (email: string, pass: string) => Promise<UserCredential>;
   login: (email: string, pass: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
-  sendVerificationEmail: (user?: User | null) => Promise<void>;
+  sendVerificationEmail: (userParam?: User | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

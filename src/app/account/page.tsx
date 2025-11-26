@@ -27,8 +27,6 @@ export default function AccountPage() {
   const [isBalanceLoading, setIsBalanceLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [isResending, setIsResending] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -36,14 +34,6 @@ export default function AccountPage() {
     }
   }, [user, authLoading, router]);
   
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (cooldown > 0) {
-      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [cooldown]);
-
   useEffect(() => {
     const fetchAccountData = async () => {
       if (user && idToken) {
@@ -85,33 +75,6 @@ export default function AccountPage() {
       description: t('account_toast_copied_desc', { text }),
     });
   };
-
-  const handleResendVerification = async () => {
-    if (!user || isResending || cooldown > 0) return;
-
-    setIsResending(true);
-    try {
-        await sendVerificationEmail(user);
-        toast({
-            title: t('verify_email_sent_title'),
-            description: t('verify_email_sent_desc'),
-        });
-        setCooldown(60); // Start 60-second cooldown
-    } catch (error: any) {
-        let errorMessage = error.message;
-        if (error.code === 'auth/too-many-requests') {
-            errorMessage = "Вы отправили слишком много запросов. Попробуйте позже.";
-        }
-        toast({
-            variant: "destructive",
-            title: t('verify_email_error_title'),
-            description: errorMessage,
-        });
-    } finally {
-        setIsResending(false);
-    }
-  };
-
 
   if (authLoading || !user) {
     return (
@@ -215,22 +178,10 @@ export default function AccountPage() {
                             <span>{t('verified')}</span>
                         </div>
                     ) : (
-                         <div className="flex flex-col items-stretch sm:items-end gap-2 w-full sm:w-auto">
-                            <div className="inline-flex items-center gap-2 text-sm font-medium text-yellow-600 bg-yellow-100 px-3 py-1.5 rounded-full">
-                                <AlertCircle className="h-4 w-4"/>
-                                <span>{t('unverified')}</span>
-                            </div>
-                            <Button 
-                                onClick={handleResendVerification} 
-                                disabled={isResending || cooldown > 0} 
-                                variant="secondary"
-                                size="sm"
-                                className="w-full sm:w-auto"
-                            >
-                                {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                {isResending ? t('bonus_button_claiming') : (cooldown > 0 ? `${t('verify_email_cooldown')} ${cooldown} с.` : t('verify_email_resend_button'))}
-                            </Button>
-                         </div>
+                         <div className="inline-flex items-center gap-2 text-sm font-medium text-yellow-600 bg-yellow-100 px-3 py-1.5 rounded-full">
+                            <AlertCircle className="h-4 w-4"/>
+                            <span>{t('unverified')}</span>
+                        </div>
                     )}
                 </div>
             </CardContent>

@@ -6,10 +6,6 @@ import { useLanguage } from "@/context/language-context";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ShieldAlert } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Loader2 } from "lucide-react";
 
 export default function VerifyPage() {
@@ -38,21 +34,7 @@ export default function VerifyPage() {
             <h1 className="text-3xl font-bold mb-2">{t('verification_page_title')}</h1>
             <p className="text-muted-foreground">{t('verification_page_description')}</p>
         </div>
-        
-        {!user.emailVerified ? (
-            <Alert variant="destructive">
-                <ShieldAlert className="h-4 w-4" />
-                <AlertTitle>{t('verification_email_first_title')}</AlertTitle>
-                <AlertDescription>
-                    {t('verification_email_first_desc')}
-                    <Button asChild variant="link" className="p-0 h-auto font-semibold">
-                      <Link href="/account">{t('go_to_account')}</Link>
-                    </Button>
-                </AlertDescription>
-            </Alert>
-        ) : (
-            <VerifyForm />
-        )}
+        <VerifyForm />
       </div>
     </div>
   );
